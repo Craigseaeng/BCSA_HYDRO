@@ -191,6 +191,9 @@ C----------------------------------------------------------------------C
             SAL1(L,K)=SAL(L,K)
             TEM1(L,K)=TEM(L,K)
             DYE1(L,K)=DYE(L,K)
+            do_251: DO NS=1,NSCM
+              SED1(L,K,NS)=SED(L,K,NS)
+            END DO do_251
           END DO do_250
         END DO do_240
 
