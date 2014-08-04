@@ -118,8 +118,8 @@ SUBROUTINE SEDIC
          FORALL(K=1:NSCM)PER(K,LL,L)=PNEW(NCORENO(I,J),LL,K)/100.0 !set mass fraction to measured value
          A_P(LL,L)=ATEMP(NCORENO(I,J),LL)
          N_P(LL,L)=NTEMP(NCORENO(I,J),LL)
-         BULKDENS(LL,L)=(SEDDENS/(SEDDENS-WATERDENS))*(BDEN(NCORENO(I,J),LL)-1.0)  !Converts wet to dry bulk density
-
+!         BULKDENS(LL,L)=(SEDDENS/(SEDDENS-WATERDENS))*(BDEN(NCORENO(I,J),LL)-1.0)  !Converts wet to dry bulk density
+         BULKDENS(LL,L)=BDEN(NCORENO(I,J),LL) ! For input in dry density
        ENDDO
      ENDDO  
 ! Constant Erosion in Horizontal ********************************
@@ -159,7 +159,8 @@ SUBROUTINE SEDIC
            A_P(LL,L)=ATEMP(1,LL)
            N_P(LL,L)=NTEMP(1,LL)
            FORALL(K=1:NSCM)PER(K,LL,L)=PNEW(1,LL,K)/100.0
-           BULKDENS(LL,L)=((SEDDENS)/(SEDDENS-WATERDENS))*(BDEN(1,LL)-1.0) !bulk density from SEDZLJ-type input
+!        BULKDENS(LL,L)=(SEDDENS/(SEDDENS-WATERDENS))*(BDEN(NCORENO(I,J),LL)-1.0)  !Converts wet to dry bulk density
+         BULKDENS(LL,L)=BDEN(NCORENO(I,J),LL) ! For input in dry density
         ENDDO
      ENDDO
      
