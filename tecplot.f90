@@ -22,7 +22,7 @@ REAL,DIMENSION(KC)::CTEMP1
 REAL,DIMENSION(LCM)::UTMPS,VTMPS,VMAG,SURFEL
 REAL,DIMENSION(LCM)::DMAX,DAVG,VMAGC,CSMAX
 INTEGER,SAVE::nstep
-REAL::deltat,CPGV
+REAL::deltat,CPGV, time_ee
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
 
 !REAL Waterflow
@@ -76,6 +76,10 @@ IF(.NOT.FIRSTTIME)THEN
 
 	FIRSTTIME=.TRUE.
 ENDIF
+
+! EE time parameter
+time_ee=DT*FLOAT(N)+TCON*TBEGIN 
+time_ee=time_ee/86400.
 
 ! Timing parameters
 deltat=tidalp/float(ntsptc)
@@ -131,7 +135,7 @@ FORALL(L=2:LA)THCK(L)=TSEDT(L)-TSET0T(L)
 
 !*********************************************
 ! Write tecplot2d.dat header at each call
-WRITE(111,*)'ZONE T="',tbegin+float(nstep-1)*deltat*float(ishprt)/86400.0,'" I= ' ,IC-4,' J= ' ,JC-4,' F=POINT'
+WRITE(111,*)'ZONE T="',time_ee,'" I= ' ,IC-4,' J= ' ,JC-4,' F=POINT'
 
 IF(STINC.LT.1)THEN
 	TEMPSTINC=1
@@ -174,25 +178,25 @@ DO L=2,LA
 ENDDO
 
 ! Write velocity calibration data each call
-!WRITE(112,'(16F7.3)') tbegin+float(nstep-1)*deltat*float(ishprt)/86400.0,SURFEL(LIJ(122,114)), &
-!    U(LIJ(122,114),1),V(LIJ(122,114),1),SURFEL(LIJ(45,29)),U(LIJ(45,29),1),V(LIJ(45,29),1), &
-!    SURFEL(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),SURFEL(LIJ(119,312)),U(LIJ(119,312),1), &
-!    V(LIJ(119,312),1),SURFEL(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
+WRITE(112,'(16F7.3)') time_ee,SURFEL(LIJ(122,114)), &
+    U(LIJ(122,114),1),V(LIJ(122,114),1),SURFEL(LIJ(45,29)),U(LIJ(45,29),1),V(LIJ(45,29),1), &
+    SURFEL(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),SURFEL(LIJ(119,312)),U(LIJ(119,312),1), &
+    V(LIJ(119,312),1),SURFEL(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
 
 ! Write flow calibration data each call
-!WRITE(113,'(6F7.3)')  tbegin+float(nstep-1)*deltat*float(ishprt)/86400.0,Waterflowtot(1), &
+!WRITE(113,'(6F7.3)')  time_ee,Waterflowtot(1), &
 !    Waterflowtot(2),Waterflowtot(3),Waterflowtot(4),Waterflowtot(5)
 
 ! Write tracer calibration data each call
-!WRITE(115,'(11F7.3)') tbegin+float(nstep-1)*deltat*float(ishprt)/86400.0,SAL(LIJ(122,114),1), &
-!    DYE(LIJ(122,114),1),SAL(LIJ(45,29),1),DYE(LIJ(45,29),1),SAL(LIJ(39,202),1),DYE(LIJ(39,202),1), &
-!    SAL(LIJ(119,312),1),DYE(LIJ(119,312),1),SAL(LIJ(130,349),1),DYE(LIJ(130,349),1)
-!
-!! Write TSS calibration data each call (hard coded for single water layer (KC))
-!DO K=1,NSCM
-!    WRITE(105, 299) tbegin+float(nstep-1)*deltat*float(ishprt)/86400.0, K, SED(LIJ(122,114),1,K), &
-!        SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
-!ENDDO
+WRITE(115,'(11F7.3)') time_ee,SAL(LIJ(122,114),1), &
+    DYE(LIJ(122,114),1),SAL(LIJ(45,29),1),DYE(LIJ(45,29),1),SAL(LIJ(39,202),1),DYE(LIJ(39,202),1), &
+    SAL(LIJ(119,312),1),DYE(LIJ(119,312),1),SAL(LIJ(130,349),1),DYE(LIJ(130,349),1)
+
+! Write TSS calibration data each call (hard coded for single water layer (KC))
+DO K=1,NSCM
+    WRITE(105, 299) time_ee, K, SED(LIJ(122,114),1,K), &
+        SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
+ENDDO
 
 ! 2D ouput of tecplot2d.out for all cells
 NAN=1.0/0.0
