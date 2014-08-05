@@ -131,6 +131,12 @@ SUBROUTINE SEDIC
      ALLOCATE(ATEMP(1,KBM))
 
      CORE=1    
+     DO L=2,LA
+        I=IL(L)
+        J=JL(L)
+        NCORENO(I,J)=1
+     ENDDO
+
      READ (10,'(A80)') STR_LINE
      READ(10,*)(TAUTEMP(CORE,LL),LL=1,KB) !read the critical shear stresses of the core
      READ (10,'(A80)') STR_LINE			
@@ -160,15 +166,10 @@ SUBROUTINE SEDIC
            N_P(LL,L)=NTEMP(1,LL)
            FORALL(K=1:NSCM)PER(K,LL,L)=PNEW(1,LL,K)/100.0
 !        BULKDENS(LL,L)=(SEDDENS/(SEDDENS-WATERDENS))*(BDEN(NCORENO(I,J),LL)-1.0)  !Converts wet to dry bulk density
-         BULKDENS(LL,L)=BDEN(NCORENO(I,J),LL) ! For input in dry density
+         BULKDENS(LL,L)=BDEN(CORE,LL) ! For input in dry density
         ENDDO
      ENDDO
      
-     DO L=2,LA
-        I=IL(L)
-        J=JL(L)
-        NCORENO(I,J)=1
-     ENDDO
 
   ENDIF
   FORALL(LL=1:KB)BEDDINIT(2:LA,LL)=BULKDENS(KB+1-LL,2:LA)
