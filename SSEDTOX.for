@@ -87,7 +87,7 @@ C
 C *** EE BEGIN BLOCK  
 C  
       IF(IS_TIMING)THEN  
-        T1TMP=SECNDS(0.0)  
+        !T1TMP=SECNDS(0.0)  
       ENDIF  
 C  
 C *** EE END BLOCK  
@@ -1119,7 +1119,7 @@ C
 C  
 C *** EE BEGIN BLOCK  
 C  
-      TSSED=TSSED+SECNDS(T1TMP)  
+      !TSSED=TSSED+SECNDS(T1TMP)  
 C  
 C *** EE END BLOCK  
 C  

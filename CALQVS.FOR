@@ -206,7 +206,7 @@ C
 C  
 C **  CONTROL STRUCTURES AND TIDAL INLETS  
 C  
-      T1TMP=SECNDS(0.0)  
+      !T1TMP=SECNDS(0.0)  
       DO NCTL=1,NQCTL  
         IF(NQCTYP(NCTL).LE.1)THEN  
           NCTLT=NQCTLQ(NCTL)  
@@ -383,7 +383,7 @@ C
           ENDDO  
         ENDIF  
       ENDDO  
-      TQCTL=TQCTL+SECNDS(T1TMP)  
+      !TQCTL=TQCTL+SECNDS(T1TMP)  
 C  
 C **  FLOW WITHDRAWAL AND RETURN  
 C  
