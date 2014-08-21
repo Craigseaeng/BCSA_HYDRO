@@ -315,20 +315,24 @@ SUBROUTINE SEDZLJ(L)
      ! ETOTO(L) = Total erosion at this cell
      ! ELAY(K) = Erosion from this layer of size class k
      ! ESED  =  Total erosion from layer
-         WHERE(TAU(L)>=TCRE(1:NSCM))
-        E(1:NSCM,L)=E(1:NSCM,L)+PER(1:NSCM,LL,L)*EBD(LL,L)
-        ELAY(1:NSCM)=PER(1:NSCM,LL,L)*EBD(LL,L)
-        TTEMP(1:NSCM,L)=PER(1:NSCM,LL,L)*TSED(LL,L)-ELAY(1:NSCM) !thickness due to each size class
-     ELSEWHERE
-        E(1:NSCM,L)=0.0
-        ELAY(1:NSCM)=0.0
-        TTEMP(1:NSCM,L)=PER(1:NSCM,LL,L)*TSED(LL,L)
-     ENDWHERE
-     WHERE(TTEMP(1:NSCM,L)<0.0) !if the thickness due to a size class is negative
-        TTEMP(1:NSCM,L)=0.0 !set thickness to zero
-        E(1:NSCM,L)=E(1:NSCM,L)-PER(1:NSCM,LL,L)*EBD(LL,L)+PER(1:NSCM,LL,L)*TSED(LL,L) !recalculate erosions
-        ELAY(1:NSCM)=PER(1:NSCM,LL,L)*TSED(LL,L)
-     ENDWHERE
+     DO K=1,NSCM
+         IF(TAU(L)>=TCRE(K))THEN
+            E(K,L)=E(K,L)+PER(K,LL,L)*EBD(LL,L)
+            ELAY(K)=PER(K,LL,L)*EBD(LL,L)
+            TTEMP(K,L)=PER(K,LL,L)*TSED(LL,L)-ELAY(K) !thickness due to each size class
+         ELSE
+            E(K,L)=0.0
+            ELAY(K)=0.0
+            TTEMP(K,L)=PER(K ,LL,L)*TSED(LL,L)
+         ENDIF
+     ENDDO
+     DO K=1,NSCM
+         IF(TTEMP(K,L)<0.0)THEN !if the thickness due to a size class is negative
+            TTEMP(K,L)=0.0 !set thickness to zero
+            E(K,L)=E(K,L)-PER(K,LL,L)*EBD(LL,L)+PER(K,LL,L)*TSED(LL,L) !recalculate erosions
+            ELAY(K)=PER(K,LL,L)*TSED(LL,L)
+         ENDIF
+     ENDDO
      ESED=SUM(ELAY(1:NSCM))    !total erosion from the layer
      ETOTO(L)=SUM(E(1:NSCM,L)) !total erosion in cell
 
@@ -371,7 +375,7 @@ SUBROUTINE SEDZLJ(L)
 !  enddo
   ETOTO(L)=ETOTO(L)/(DT) !total erosion rate (g/cm2 per timestep)
 
-  TSSEDZLJ=TSSEDZLJ+SECNDS(T1TMP)   
+   TSSEDZLJ=TSSEDZLJ+SECNDS(T1TMP)   
   
   RETURN
 END SUBROUTINE SEDZLJ
