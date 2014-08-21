@@ -67,6 +67,9 @@ IF(.NOT.FIRSTTIME)THEN
     ! Boundary calibration file
     OPEN (UNIT=106, FILE='bry_cal.dat', STATUS='REPLACE')
 
+    ! Shear stress calibration file
+    OPEN (UNIT=107, FILE='shear_cal.dat', STATUS='REPLACE')
+
     ! Initialize variable for first time step
     DMAX=0.1
     CMAX=0.1
@@ -296,6 +299,11 @@ DO J=3,JC-2
 	    ENDIF
     ENDDO
 ENDDO
+
+! Shear stress calibration file
+WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),TAUMAX(LIJ(122,114)),TAU(LIJ(45,29)),TAUMAX(LIJ(45,29)), &
+    TAU(LIJ(39,202)),TAUMAX(LIJ(39,202)),TAU(LIJ(119,312)),TAUMAX(LIJ(119,312)), &
+    TAU(LIJ(130,349)),TAUMAX(LIJ(130,349))
 
 ! Format for tss_cal.dat file
 299 FORMAT(F7.3,2X,I1,F10.3,F10.3,F10.3,F10.3,F10.3)
