@@ -703,7 +703,6 @@ C
 	
       IF(NSEDFLUME.GT.0)THEN
          CALL SEDZLJ_MAIN
-
 	 ELSE
 C----------------------------------------------------------------------C
           DO NS=1,NSED

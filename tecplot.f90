@@ -93,7 +93,7 @@ TEMPMSK=-1.0
 ITEMPMSK=-1
 
 !  Calculate shear stress here even for non-sediment cases
-CALL SEDZLJ_SHEAR
+!CALL SEDZLJ_SHEAR  ! Commented out for Redundancy
 
 ! DETERMINE INITIAL SED. THICKNESS
 ! CALC. FINAL SEDIMENT THICKNESS, INITIAL SEDIMENT-WATER INTERFACE

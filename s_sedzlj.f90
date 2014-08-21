@@ -19,8 +19,9 @@ SUBROUTINE SEDZLJ(L)
   ! CALCULATES DEPOSITION, ENTRAINMENT, NET FLUX, TOTAL THICKNESS,
   ! LAYER ORDER, AND COMPONENT LAYER FRACTION
   ! Assuming ISEDDT in EFDC is 1 for now
-  ! REVISION DATE :  August 29th, 2007
-  ! Craig Jones and Scott James
+  ! REVISION DATE :  2014
+  ! Craig Jones 
+  ! Updated to add erosion rates as a function of A and N
   ! Updated to fix Active Layer issues
   !**********************************************************************
   
@@ -29,57 +30,62 @@ SUBROUTINE SEDZLJ(L)
   ETOTO(L)=0.0 !initialize no total erosion for a cell
   DEP(L)=0.0   !initialize no total deposition for a cell
   HT(L)=HP(L)*100.0 ! Convert depth (HP) from Meters to Centimeters
+
   ! Convert Bottom Shear from (m/s)^2 to dynes/cm^2
-  ! Only when shear from EFDC is used
-  
+  ! Only when shear from Main EFDC Hydro is used
   !TAU(L)=TAUBSED(L)*1000.0*10.0
+
   D(1:NSCM,L)=0.0    !initialize deposition from suspended load
   DBL(1:NSCM,L)=0.0  !initialize deposition from bedload
-  ! Convert Bottom Concentration from mg/l=g/m^3 to g/cm^3  
+
   
   IF (KC == 1) THEN
      DO K=1,NSCM
         VZDIF(L)=MAX(20.0,0.067*HT(L)*USTAR(L)*100.) !PT due to units of USTAR calc. in s_shear.f90
         TEMP2=HT(L)*DWS(K)/VZDIF(L)
-        CTB(K,L)=SED(L,1,K)*TEMP2*(1.0/(1.0-EXP(-TEMP2)))*1.0E-06
+        CTB(K,L)=SED(L,1,K)*TEMP2*(1.0/(1.0-EXP(-TEMP2)))*1.0E-06  ! Convert Bottom Concentration from mg/l=g/m^3 to g/cm^3  
      ENDDO
   ELSE
-     CTB(1:NSCM,L)=SED(L,1,1:NSCM)*1.0E-06 
+     CTB(1:NSCM,L)=SED(L,1,1:NSCM)*1.0E-06   ! Convert Bottom Concentration from mg/l=g/m^3 to g/cm^3  
   ENDIF
+
   E (1:NSCM,L)=0.0  !initialize erosion rates for each size class and each cell
   ELAY(1:NSCM)=0.0  !initialize top-layer erosion rates for each sediment size class
   SMASS(1:NSCM)=0.0 !initializes sediment mass available for deposition
+
   !**********************************************
   ! CALCULATE DEPOSITION
   ! Temporarily calculate the SMASS in the active layer (g/cm^3)
   ! so that percentages can be determined after deposition.
-  TTEMP(1:NSCM,L)=PER(1:NSCM,1,L)*TSED(1,L) !temporary thickness variable for each size class equals the mass fraction times the top-layer thickness
+  TTEMP(1:NSCM,L)=PER(1:NSCM,1,L)*TSED(1,L) !temporary mass for each size class equals the mass fraction times the thickness
+  
   ! Now calculate DEPOSITION
   ! Deposition from suspended load
   DO K=1,NSCM !loop through all sediment sizes
-     IF(CTB(K,L)<1.0E-18)CYCLE !if there is no sediment of that size available in the water column, then it cannot be deposited
+     IF(CTB(K,L)<1.0E-18)CYCLE !if there is no sediment available in the water column, then it cannot be deposited
+
      ! Calculate probability for suspended load deposition
      ! based on Gessler (1965) if D50 > 200um or Krone if < 200 um  
      IF(D50(K)>=200.0)THEN
-!
-        PY(K)=DABS(1.7544*(TCRSUS(K)/(TAU(L)+1.0d-18)-1.0))   ! PMC - Handle Tau=0
-!        PFY(K)=0.39894*EXP(-0.5*PY(K)*PY(K)) !CAJ's old formula A&S 7.1.25 (wrong)
-!        PX(K)=1.0/(1.0+0.3327*PY(K)) !CAJ's old formulation A&S 7.1.25 (wrong)
+        PY(K)=DABS(1.7544*(TCRSUS(K)/(TAU(L)+1.0d-18)-1.0))   ! 
         PFY(K)=EXP(-0.25d0*PY(K)*PY(K)) !PFY(K)=0.39894*EXP(-0.5*PY(K)*PY(K)) CAJ's old formula A&S 7.1.25
         PX(K)=1.0/(1.0+0.235235*PY(K)) !PX(K)=1.0/(1.0+0.3327*PY(K)) CAJ's old formulation A&S 7.1.25
         PROB(K)=1.0-PFY(K)*(0.34802*PX(K)-0.09587*PX(K)*PX(K)+0.74785*PX(K)**3) !A&S 7.1.25 a1, a2, a3 used (added "1.0-" 1/9/13)
-        IF(TAU(L)>TCRSUS(K))PROB(K)=0.0 !1.0-PROB(K) !account for negatives (Why was this here?)
-     ELSEIF(TAU(L)<=TCRSUS(K))THEN !if the local shear is less than the critical shear for that size class
+        IF(TAU(L)>TCRSUS(K))PROB(K)=0.0 !Need to incorporate into the if an structure
+
+     ELSEIF(TAU(L)<=TCRSUS(K))THEN !Fine sediment deposition (Krone)
         PROB(K)=1.0-TAU(L)/(TCRSUS(K)) !deposition probability is calculated
      ELSE
         PROB(K)=0.0
      ENDIF
+
      ! Calculate SMASS of sediment present in water
      ! and allow only that much to be deposited.
-     SMASS(K)=SED(L,1,K)*1.0E-6*DZC(1)*HT(L)*MAXDEPLIMIT !SMASS(K) is the total sediment mass in the first layer.  It is calculated as a precaution so that no more than the total amount of mass in the first layer can deposit onto the sediment bed per time step.
+     SMASS(K)=SED(L,1,K)*1.0E-6*DZC(1)*HT(L)*MAXDEPLIMIT !
      D(K,L)=PROB(K)*(DWS(K)*DT)*CTB(K,L) !deposition of a size class is equal to the probability of deposition times the settling rate times the time step times the sediment concentration
   ENDDO
   D(1:NSCM,L)=MIN(MAX(D(1:NSCM,L),0.0),SMASS(1:NSCM)) !do not allow more sediment to deposit than is available in the water-column layer above the bed
+
   ! Deposition from Bedload
   DO K=1,NSCM
      IF(CBL(1,L,K)>1.0E-10.AND.BLVEL(L,K)>0.0 .AND. BLFLAG(L,K)==1)THEN !if there is bedload
@@ -91,7 +97,6 @@ SUBROUTINE SEDZLJ(L)
         ELSE
            PROBVR(K,L)=MIN(CSEDSS(K)/CSEDVR(K,L),1.0) !van Rijn probability of deposition from bedload
         ENDIF
-
 ! In case Ebl = 0  The deposition from bedload reverts to Gessler's for
 ! That particle size.
         IF(CSEDSS(K)<=0.0)PROBVR(K,L)=PROB(K) !error prevention
@@ -100,11 +105,13 @@ SUBROUTINE SEDZLJ(L)
         DBL(K,L)=PROBVR(K,L)*CBL(1,L,K)*(DWS(K)*DT) !deposition from bedload is the van Rijn probability time bedload concentration time settling velocity times the time step
      ENDIF
   ENDDO
+
   DBL(1:NSCM,L)=MIN(MAX(DBL(1:NSCM,L),0.0),SMASS(1:NSCM)) !do not allow more bedload deposition than bedload mass available
   ! TOTAL DEPOSITION
   DEP(L)=SUM(DBL(1:NSCM,L),BLVEL(L,1:NSCM)>0.0)+SUM(D(1:NSCM,L)) !total depositopn is the sume of bedload and suspended load depositions for all size classes
   DEPO(L)=DEP(L)/(DT) !calculate the deposition rate
   ! ADD DEPOSITION TO TOP LAYER
+
   IF(DEP(L)>0.0)THEN !if there is deposition, calculate the new layer thickness and mass fractions
      ! LAYER: logical variable that is 0 if a layer is present at cell (this variable exists for each sediment bed layer initially defined)
      LAYER(1,L)=1 !top sediment bed layer exists (because there is deposition)
@@ -188,7 +195,6 @@ SUBROUTINE SEDZLJ(L)
   ! that will not erode, create an active layer.
   IF(TSED(1,L)>0.0.OR.NACTLAY/=0)THEN !if there is mass in the active layer, we must go through the sorting routine
      !no active layer for pure erosion (active layer needed for coarsening and deposition)
-
      ! Sort layers so that the active layer is always Ta thick.
      ! Recalculate the mass fractions after borrowing from lower layers
      IF(LAYER(1,L)==1)THEN
@@ -279,7 +285,6 @@ SUBROUTINE SEDZLJ(L)
         ENDIF
 
         SN11=(TSED0(LL,L)-TSED(LL,L))  !weighting factor
-       
         ERATEMOD(L)=((SN10-SN00)/TSED0(LL,L)*SN11+SN00)*BULKDENS(LL,L)*SQRT(1./SH_SCALE(L)) !linear interpolation around size class (g/cm2/s)
 
      ELSE
