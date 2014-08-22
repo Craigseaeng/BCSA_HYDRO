@@ -59,7 +59,7 @@ SUBROUTINE DRIFTERC   ! ********************************************************
     WRITE(ULGR)(XLA(NP),YLA(NP),REAL(ZLA(NP),4),NP=1,NPD)
     WRITE(579,*)TIMEDAY,NPD
     WRITE(579,*)(LLA(NP),XLA(NP),YLA(NP),REAL(ZLA(NP),4),NP=1,NPD)
-   FLUSH(ULGR)
+    CALL FLUSH(ULGR)
     TIMENEXT=TIMEDAY+LA_FREQ+0.000001  
   ENDIF
 
@@ -171,7 +171,7 @@ SUBROUTINE DRIFTERC   ! ********************************************************
     WRITE(ULGR) (LLA(NP),XLA(NP),YLA(NP),REAL(ZLA(NP),4),NP=1,NPD)
     WRITE(579,*)TIMEDAY
     WRITE(579,*) (LLA(NP),XLA(NP),YLA(NP),REAL(ZLA(NP),4),NP=1,NPD) 
-    FLUSH(ULGR)
+    CALL FLUSH(ULGR)
     TIMENEXT = TIMENEXT+LA_FREQ
   ENDIF  
 END SUBROUTINE
