@@ -25,9 +25,9 @@ SUBROUTINE SEDIC
   ! Open Input Files
   ! Craig Jones
   !CALL SEDDATA !calls routine to convert SEDflume data into a form useable by this code
-  OPEN(UNIT=10,FILE='erate.sdf')
-  OPEN(UNIT=20,FILE='core_field.sdf')
-  OPEN(UNIT=30,FILE='bed.sdf')
+  OPEN(UNIT=10,FILE='ERATE.SDF')
+  OPEN(UNIT=20,FILE='CORE_FIELD.SDF')
+  OPEN(UNIT=30,FILE='BED.SDF')
   ! Read in Sediment Transport Parameters
   ! VAR_BED  =  1 for variable sediment bed
   ! NCALC_BL =  1 for bedload  calculation
