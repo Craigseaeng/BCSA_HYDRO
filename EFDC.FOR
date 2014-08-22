@@ -132,9 +132,9 @@ C     IS_TIMING NEEDS TO BE BASED ON A FLAG IN EFDC.INP AS IN EFDC_DS
 C     BUT WILL USE THIS AS A DEFAULT FOR NOW  
 C  
       IS_TIMING=.TRUE.  
-      TIME_END=SECNDS(0.0)  
+      !TIME_END=SECNDS(0.0)  
 
-      CALL CPU_TIME(TIME_START)        ! *** Intel Version 11.066 Bug - Work Around
+      !CALL CPU_TIME(TIME_START)        ! *** Intel Version 11.066 Bug - Work Around
 
       COUNT = NARGS()
 	PAUSEIT = .true. !Set to .FALSE. to turn off hang-on-exit for calibration or sensitivity runs
@@ -1987,8 +1987,8 @@ C
 C *** EE BEGIN BLOCK  
 C **  OUTPUT TIMING (OUTPUT TO TIME.LOG (UNIT 9) USED BY EFDC_EXPLORER)  
 C  
-      TIME_END=SECNDS(TIME_END)  
-      TIME_END=TIME_END/3600.  
+      !TIME_END=SECNDS(TIME_END)  
+      !TIME_END=TIME_END/3600.  
 C  
 C **  DTIME AND FLUSH ARE SUPPORTED ON SUN SYSTEMS,BUT MAY NOT BE  
 C **  SUPPORTED ON OTHER SYSTEMS.  

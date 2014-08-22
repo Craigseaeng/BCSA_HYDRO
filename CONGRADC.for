@@ -22,7 +22,7 @@ C
 	ENDIF
       ! *** DSLLC
 C  
-      TTMP=SECNDS(0.0)  
+      !TTMP=SECNDS(0.0)  
       DO L=2,LA  
         PNORTH(L)=P(LNC(L))  
         PSOUTH(L)=P(LSC(L))  
@@ -176,7 +176,7 @@ C
         ENDDO  
       ENDIF
       ! *** DSLLC END BLOCK
-      TCONG=TCONG+SECNDS(TTMP)  
+      !TCONG=TCONG+SECNDS(TTMP)  
   800 FORMAT(2I6,6E13.4)  
       RETURN  
       END  
