@@ -19,11 +19,11 @@ SUBROUTINE SEDZLJ_MAIN
 
 !**********************************************************************!
 !
-  IF(IS_TIMING)THEN  
+  !IF(IS_TIMING)THEN  
         !T1TMP=SECNDS(0.0)  
-  ENDIF 
-!Calculates the shear stresses from the velocity output of the hydraulic model.
-  CALL SEDZLJ_SHEAR
+  !ENDIF 
+!Calculates the shear stresses from the velocity output of the hydro ! Temp moved to HDMT2T
+!  CALL SEDZLJ_SHEAR
   
   IF(ISSLOPE)THEN
     CALL SEDZLJ_SLOPE

@@ -686,11 +686,12 @@ C
 C  
 C**********************************************************************C  
 C  
-C **  CALCULATE SALINITY, TEMPERATURE, DYE AND SEDIMENT CONCENTRATIONS  
+C **  CALCULATE SEHAR ,SALINITY, TEMPERATURE, DYE AND SEDIMENT CONCENTRATIONS  
 C **  AT TIME LEVEL (N+1)  
-C  
+C  Craig Jones 2014
 C----------------------------------------------------------------------C  
 C  
+      CALL SEDZLJ_SHEAR
       CALL CALCONC (ISTL,IS2TL)  
 C  
 C----------------------------------------------------------------------C  

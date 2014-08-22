@@ -25,9 +25,9 @@ SUBROUTINE SEDIC
   ! Open Input Files
   ! Craig Jones
   !CALL SEDDATA !calls routine to convert SEDflume data into a form useable by this code
-  OPEN(UNIT=10,FILE='ERATE.SDF')
-  OPEN(UNIT=20,FILE='CORE_FIELD.SDF')
-  OPEN(UNIT=30,FILE='BED.SDF')
+  OPEN(UNIT=10,FILE='erate.sdf')
+  OPEN(UNIT=20,FILE='core_field.sdf')
+  OPEN(UNIT=30,FILE='bed.sdf')
   ! Read in Sediment Transport Parameters
   ! VAR_BED  =  1 for variable sediment bed
   ! NCALC_BL =  1 for bedload  calculation
@@ -66,8 +66,11 @@ SUBROUTINE SEDIC
   READ (10,'(A80)') STR_LINE
   READ (10,*) TACTM !read in active layer multiplier
 ! Read in Initial Erosion Data
-  IF(VAR_BED>=1)THEN    
+
+
 ! Variable Bed *************************************************
+  IF(VAR_BED>=1)THEN    
+
      READ(20,*)INCORE !read the number of cores    
      ALLOCATE(TAUTEMP(INCORE,KBM))
      ALLOCATE(PNEW(INCORE,KBM,NSCM+1))
@@ -77,7 +80,7 @@ SUBROUTINE SEDIC
      TAUTEMP=0.0
      PNEW=0.0
      BDEN=0.0   
-     ! Read variable bed in I,J,core format for L=2,LA locations
+     ! Read variable bed in I,J,CORENO format for L=2,LA locations
      DO L=2,LA 
         READ(20,*,IOSTAT=ERROR) I,J,NCORENO(I,J)
         IF(ERROR==1)THEN
@@ -156,8 +159,7 @@ SUBROUTINE SEDIC
 !        READ(10,*)TAULOC(K) !shear stress used to erode a portion of the core
 !        READ(10,*)(ERATETEMP(CORE,LL,K),LL=1,KB) !erosion rate for each layer subject to shear stress TAULOC
 !     ENDDO
-
-     
+   
      DO L=2,LA
         DO LL=1,KB
            TAUCOR(LL,L)=TAUTEMP(1,LL)
@@ -170,8 +172,10 @@ SUBROUTINE SEDIC
         ENDDO
      ENDDO
      
+   ENDIF
 
-  ENDIF
+!*** End Variable bed loop
+
   FORALL(LL=1:KB)BEDDINIT(2:LA,LL)=BULKDENS(KB+1-LL,2:LA)
   FORALL(LL=1:KB)BEDBINIT(2:LA,LL)=BEDDINIT(2:LA,LL)*1.65D0/2.65D0+1000.0D0
   FORALL(LL=1:KB)PORBED(2:LA,LL)=0.001D0*(BEDBINIT(2:LA,LL)-BEDDINIT(2:LA,LL))
