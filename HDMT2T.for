@@ -39,16 +39,16 @@ C
       INTEGER,SAVE,ALLOCATABLE,DIMENSION(:)::LCORNWE  
       INTEGER,SAVE,ALLOCATABLE,DIMENSION(:)::LCORNSN  
 C
-      INTERFACE TO FUNCTION KBHIT  
-     &    [C,ALIAS:'__kbhit']  
-     &    ()  
-      LOGICAL KBHIT*1  
-      END  
-      INTERFACE TO FUNCTION GETCH  
-     &    [C,ALIAS:'__getch']  
-     &    ()  
-      INTEGER GETCH*1  
-      END  
+!      INTERFACE TO FUNCTION KBHIT  
+!     &    [C,ALIAS:'__kbhit']  
+!     &    ()  
+!      LOGICAL KBHIT*1  
+!      END  
+!      INTERFACE TO FUNCTION GETCH  
+!     &    [C,ALIAS:'__getch']  
+!     &    ()  
+!      INTEGER GETCH*1  
+!      END  
 C
       IF(.NOT.ALLOCATED(WCOREW))THEN
 	  ALLOCATE(WCOREW(LCM))
@@ -1810,14 +1810,14 @@ C
 C**********************************************************************C  
 C  
 C *** DJB  
-      IF(.NOT.KBHIT())GOTO 1001  
-      I1=GETCH()  
-      WRITE(*,'(A)')'PROGRAM PAUSED BY USER'  
-      WRITE(*,'(A)')'  EFDC_DS: TO EXIT PRESS THE SAME KEY'
-      WRITE(*,'(A)')'  EFDC_DS: TO CONTINUE RUN PRESS ANY OTHER KEY'  
-      I2=GETCH()  
-      IF(I1.NE.I2)GOTO 1001
-C  
+!      IF(.NOT.KBHIT())GOTO 1001  
+!      I1=GETCH()  
+!      WRITE(*,'(A)')'PROGRAM PAUSED BY USER'  
+!      WRITE(*,'(A)')'  EFDC_DS: TO EXIT PRESS THE SAME KEY'
+!      WRITE(*,'(A)')'  EFDC_DS: TO CONTINUE RUN PRESS ANY OTHER KEY'  
+!      I2=GETCH()  
+!      IF(I1.NE.I2)GOTO 1001
+      GOTO 1001  
  1000 CONTINUE  
 C  
 C**********************************************************************C  

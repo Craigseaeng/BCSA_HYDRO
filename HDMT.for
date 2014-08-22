@@ -34,16 +34,16 @@ C
 	REAL::TAUBC,TAUBC2,UTMP,VTMP,CURANG
       REAL::CTIM
 
-      INTERFACE TO FUNCTION KBHIT  
-     &    [C,ALIAS:'__kbhit']  
-     &    ()  
-      LOGICAL KBHIT*1  
-      END  
-      INTERFACE TO FUNCTION GETCH  
-     &    [C,ALIAS:'__getch']  
-     &    ()  
-      INTEGER GETCH*1  
-      END  
+!      INTERFACE TO FUNCTION KBHIT  
+!     &    [C,ALIAS:'__kbhit']  
+!     &    ()  
+!      LOGICAL KBHIT*1  
+!      END  
+!      INTERFACE TO FUNCTION GETCH  
+!     &    [C,ALIAS:'__getch']  
+!     &    ()  
+!      INTEGER GETCH*1  
+!      END  
 C  
       !TTMP=SECNDS(0.0)  
       FOURDPI=4./PI  
@@ -1559,14 +1559,15 @@ C
 C  
 C**********************************************************************C  
 C  
-        IF(KBHIT())THEN  
-          I1=GETCH()  
-          WRITE(*,'(A)')'PROGRAM PAUSED BY USER'  
-          WRITE(*,'(A)')'  EFDC_DS: TO EXIT PRESS THE SAME KEY'
-          WRITE(*,'(A)')'  EFDC_DS: TO CONTINUE RUN PRESS ANY OTHER KEY'  
-          I2=GETCH()  
-          IF(I1.EQ.I2)GOTO 1001
-        ENDIF  
+!        IF(KBHIT())THEN  
+!          I1=GETCH()  
+!          WRITE(*,'(A)')'PROGRAM PAUSED BY USER'  
+!          WRITE(*,'(A)')'  EFDC_DS: TO EXIT PRESS THE SAME KEY'
+!          WRITE(*,'(A)')'  EFDC_DS: TO CONTINUE RUN PRESS ANY OTHER KEY'  
+!          I2=GETCH()  
+!          IF(I1.EQ.I2)GOTO 1001
+!        ENDIF
+      GOTO 1001  
  1000 CONTINUE  
 C  
 C**********************************************************************C  
