@@ -1002,7 +1002,7 @@ C
           END DO do_1510
 C
          do_1511: DO L=2,LA
-              WRITE (98) TAULPF(L)
+              WRITE (98,'(1E12.4)') TAULPF(L)
          END DO do_1511
 
         HP_OLD = HP_NEW   ! ARRAY OPERATION
