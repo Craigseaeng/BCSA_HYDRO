@@ -23,7 +23,7 @@ C
         END DO do_120
 
         do_125: DO L=2,LA
-          READ(99) TAU(L)
+          READ(99,'(1E12.4)') TAU(L)
         END DO do_125
 
       ELSE  
