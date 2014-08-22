@@ -44,7 +44,7 @@ IF(.NOT.FIRSTTIME)THEN
 	WRITE(111,'(A30)')'TITLE = "EFDC 2D Tecplot Data"'
 
     ! Header for Sandia Coastal variables
-    WRITE(111,*)'VARIABLES= "I","J","X","Y","U","V","HP","TAU","D50","THCK","WvHt","DYE"'
+    WRITE(111,'(A)')'VARIABLES= "I","J","X","Y","U","V","HP","TAU","D50","THCK","Dye","TAUMAX","VMAX"'
     
     ! Header for BCSA variables
     !WRITE(111,*)'VARIABLES= "I","J","X","Y","TAU","TAUAVG","VMAX"'
@@ -66,6 +66,9 @@ IF(.NOT.FIRSTTIME)THEN
 
     ! Boundary calibration file
     OPEN (UNIT=106, FILE='bry_cal.dat', STATUS='REPLACE')
+
+    ! Shear stress calibration file
+    OPEN (UNIT=107, FILE='shear_cal.dat', STATUS='REPLACE')
 
     ! Initialize variable for first time step
     DMAX=0.1
@@ -278,9 +281,9 @@ DO J=3,JC-2
             ENDIF
             
             ! Write tecplot data line for active cell    
-            WRITE(111,'(I4,1X,I4,1X,10E17.7)')I,J,DLON(LIJ(I,J)),DLAT(LIJ(I,J)), &
+            WRITE(111,'(I4,1X,I4,1X,11E17.7)')I,J,DLON(LIJ(I,J)),DLAT(LIJ(I,J)), &
 			    UTMPA,VTMPA,HP(LIJ(I,J)),TAU(LIJ(I,J)),D50AVG(LIJ(I,J)),THCK(LIJ(I,J)), &
-                DYE(LIJ(I,J),1),TAUMAX(LIJ(I,J)) !Sandia Coastal
+                DYE(LIJ(I,J),1),TAUMAX(LIJ(I,J)),VMAX(LIJ(I,J)) !Sandia Coastal
 
 !           WRITE(111,'(I4,1X,I4,1X,10E17.7)')I,J,DLON(LIJ(I,J)),DLAT(LIJ(I,J)), &
 !				TAUMAX(L),TAUAVG(L),CSMAX(L) !BCSA Average variables
@@ -288,14 +291,19 @@ DO J=3,JC-2
         ELSE
 
             ! Write tecplot data line for inactive cell
-			WRITE(111,'(I4,1X,I4,1X,12E13.4)')I,J,TEMPMSK,TEMPMSK,TEMPMSK,TEMPMSK,TEMPMSK, &
-				TEMPMSK,0,0,TEMPMSK,TEMPMSK ! Sandia Coastal
+			WRITE(111,'(I4,1X,I4,1X,11E13.4)')I,J,TEMPMSK,TEMPMSK,TEMPMSK,TEMPMSK,TEMPMSK, &
+				TEMPMSK,0,0,TEMPMSK,TEMPMSK,TEMPMSK ! Sandia Coastal
 
 !			WRITE(111,'(I4,1X,I4,1X,12E13.4)')I,J,TEMPMSK,TEMPMSK, &
 !			    TEMPMSK,TEMPMSK,TEMPMSK ! BCSA
 	    ENDIF
     ENDDO
 ENDDO
+
+! Shear stress calibration file
+WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),TAUMAX(LIJ(122,114)),TAU(LIJ(45,29)),TAUMAX(LIJ(45,29)), &
+    TAU(LIJ(39,202)),TAUMAX(LIJ(39,202)),TAU(LIJ(119,312)),TAUMAX(LIJ(119,312)), &
+    TAU(LIJ(130,349)),TAUMAX(LIJ(130,349))
 
 ! Format for tss_cal.dat file
 299 FORMAT(F7.3,2X,I1,F10.3,F10.3,F10.3,F10.3,F10.3)
