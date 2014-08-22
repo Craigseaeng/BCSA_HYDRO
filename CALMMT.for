@@ -28,6 +28,10 @@ C
           EVPGLPF(L)=0.  
           RINFLPF(L)=0.  
           GWLPF(L)=0.  
+
+C  Adding Shear stress Craig Jones 2014
+          TAULPF(L)=0.
+
         ENDDO  
         DO NSC=1,NSED  
           DO K=1,KB  
@@ -136,6 +140,10 @@ C
           EVPGLPF(L)=0.  
           RINFLPF(L)=0.  
           GWLPF(L)=0.  
+
+C  Adding Shear stress Craig Jones 2014
+          TAULPF(L)=0.
+
         ENDDO  
         DO NSC=1,NSED  
           DO K=1,KB  
@@ -262,7 +270,10 @@ C
             EVPSLPF(L)=EVPSLPF(L)+DXYP(L)*EVAPT(L)  
             EVPGLPF(L)=0.  
             RINFLPF(L)=0.  
-            GWLPF(L)=0.  
+            GWLPF(L)=0. 
+            
+            TAULPF(L)=0.
+             
           ENDDO  
         ELSE  
           DO L=2,LA  
@@ -270,6 +281,11 @@ C
             EVPGLPF(L)=EVPGLPF(L)+EVAPGW(L)  
             RINFLPF(L)=RINFLPF(L)+RIFTR(L)  
             GWLPF(L)=GWLPF(L)+AGWELV(L)  
+
+C Craig Jones accumulate Tau 2014
+
+          TAULPF(L)=TAULPF(L)+TAU(L)
+
           ENDDO  
         ENDIF  
         DO NT=1,NTOX  
@@ -397,7 +413,8 @@ C
             EVPSLPF(L)=EVPSLPF(L)+DXYP(L)*EVAPT(L)  
             EVPGLPF(L)=0.  
             RINFLPF(L)=0.  
-            GWLPF(L)=0.  
+            GWLPF(L)=0.
+            TAULPF(L)=0.  
           ENDDO  
         ELSE  
           DO L=2,LA  
@@ -405,6 +422,11 @@ C
             EVPGLPF(L)=EVPGLPF(L)+EVAPGW(L)  
             RINFLPF(L)=RINFLPF(L)+RIFTR(L)  
             GWLPF(L)=GWLPF(L)+AGWELV(L)  
+
+C Craig Jones accumulate Tau 2014
+
+          TAULPF(L)=TAULPF(L)+TAU(L)
+
           ENDDO  
         ENDIF  
         DO NT=1,NTOX  
@@ -562,6 +584,10 @@ C
           EVPGLPF(L)=FLTWT*EVPGLPF(L)  
           RINFLPF(L)=FLTWT*RINFLPF(L)  
           GWLPF(L)=FLTWT*GWLPF(L)  
+
+C Apply filter weight to Tau
+          TAULPF(L)=FLTWT*TAULPF(L)
+
         ENDDO  
         DO NSC=1,NSED  
           DO K=1,KB  
@@ -669,7 +695,11 @@ C
           EVPSLPF(L)=FLTWT*EVPSLPF(L)  
           EVPGLPF(L)=FLTWT*EVPGLPF(L)  
           RINFLPF(L)=FLTWT*RINFLPF(L)  
-          GWLPF(L)=FLTWT*GWLPF(L)  
+          GWLPF(L)=FLTWT*GWLPF(L) 
+          
+C Apply filter weight to Tau
+          TAULPF(L)=FLTWT*TAULPF(L)
+ 
         ENDDO  
         DO NSC=1,NSED  
           DO K=1,KB  
@@ -970,6 +1000,10 @@ C
               WRITE (98,907) (QSRTLPP(K,NS),K=1,KC)
               WRITE (98,907) (QSRTLPN(K,NS),K=1,KC)
           END DO do_1510
+C
+         do_1511: DO L=2,LA
+              WRITE (98) TAULPF(L)
+         END DO do_1511
 
         HP_OLD = HP_NEW   ! ARRAY OPERATION
 
