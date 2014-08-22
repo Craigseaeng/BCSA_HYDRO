@@ -76,15 +76,15 @@ SUBROUTINE SHOWVAL
     ENDIF
     
     ! *** ESTIMATE COMPUTATIONAL TIME
-    IF(N.GT.1)THEN
-      CALL CPU_TIME(TCGRS)
-      T1=TBEGIN*TCON
-      T2=(TBEGIN*TCON+TIDALP*NTC)
-      TSPEED=TCGRS/(TIMESEC-T1)
-      ETA=(T2-TIMESEC)*TSPEED/3600.
-      T1=TCGRS/3600.
-      WRITE(*,'('' ** ELAPSED CPU TIME: '',F7.2,'' (hr)  ESTIMATED TIME TO COMPLETION:'',F7.2,'' (hr)'')') T1,ETA
-    ENDIF
+    !IF(N.GT.1)THEN
+    !  CALL CPU_TIME(TCGRS)
+    !  T1=TBEGIN*TCON
+    !  T2=(TBEGIN*TCON+TIDALP*NTC)
+    !  TSPEED=TCGRS/(TIMESEC-T1)
+    !  ETA=(T2-TIMESEC)*TSPEED/3600.
+    !  T1=TCGRS/3600.
+    !  WRITE(*,'('' ** ELAPSED CPU TIME: '',F7.2,'' (hr)  ESTIMATED TIME TO COMPLETION:'',F7.2,'' (hr)'')') T1,ETA
+    !ENDIF
     TIME=DT*FLOAT(N)+TCON*TBEGIN   
     IF(NSHTYPE==1)THEN
       IZSMIN=NINT(ZSSMIN)
@@ -136,8 +136,7 @@ SUBROUTINE SHOWVAL
   ! *** INCREMENT THE SCREEN COUNTER
   JSHPRT=JSHPRT+1
   IF(JSHPRT.LT.ISHPRT)RETURN
-!  if(isveg==1.and.outputflag/=0.or.istran(3).or.ISTRAN(8))call tecplot !User defined output subroutine for Tecplot 
-  call tecplot !User defined output subroutine for Tecplot 
+  if(isveg==1.and.outputflag/=0.or.istran(1).or.ISTRAN(3).or.ISTRAN(6)) call tecplot !User defined output subroutine for Tecplot  
   inquire(file='ensight.inp',exist=status)
   if(status) call ensight
   JSHPRT=1
