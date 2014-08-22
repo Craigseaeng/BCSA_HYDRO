@@ -462,7 +462,7 @@ SUBROUTINE VARZEROReal
       HP=0.0
       HPI=0.0
       HPTMP=0.0
-      write(4,*)hpveg !Can't figure out why this is needed...code crashes without it.
+      !write(4,*)hpveg !Can't figure out why this is needed...code crashes without it.
       HPVEG=0.0
       HRU=0.0
       HRUO=0.0
