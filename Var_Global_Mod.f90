@@ -3537,6 +3537,7 @@
       REAL,ALLOCATABLE,DIMENSION(:,:)::VHDX2LPF
       REAL,ALLOCATABLE,DIMENSION(:)::HP_NEW !(LCM) 
       REAL,ALLOCATABLE,DIMENSION(:)::HP_OLD !(LCM) 
+      REAL,ALLOCATABLE,DIMENSION(:)::TAULPF !(LCM) 
 ! End SEDZLJ variables
 
       !Begining of ensight output variables

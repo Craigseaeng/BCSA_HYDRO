@@ -22,6 +22,10 @@ C
           READ(99,907) (QSRTLPN(K,NS),K=1,KC)
         END DO do_120
 
+        do_125: DO L=2,LA
+          READ(99) TAU(L)
+        END DO do_125
+
       ELSE  
         DO L=2,LA  
           READ(99,907)HMP(L),HLPF(L),QSUMELPF(L)  
