@@ -228,7 +228,7 @@ CONTAINS
        RL=0
        IM=IL(L)
        JM=JL(L)
-       LOOP1:DO WHILE(1)
+       LOOP1:DO
          STATUS=0
          RL=RL+RL0                        !SEARCH FETCH FOR EVERY 10M
          XM = XCOR(L,5)+RL*COS(AL(NZ))    !UPWIND DISTANCE=FETCH

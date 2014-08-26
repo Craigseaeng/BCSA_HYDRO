@@ -578,12 +578,12 @@ CPMC      DELT=DT2
 
 ******* Allocate/Dimension declaration
 
-        Real, STATIC ::  MPS_TO_MPH, W_M2_TO_BTU_FT2_DAY 
-        Real, STATIC ::  FLUX_BR_TO_FLUX_SI, BTU_FT2_DAY_TO_W_M2 
-        Real, STATIC ::  REFL 
-        Real, STATIC ::  AFW,BFW,CFW, BCONV
-        Real, STATIC ::  TDEW_F, TAIR_F, WIND_2M
-        Real, STATIC ::  TIMENEXT
+        REAL ::  MPS_TO_MPH, W_M2_TO_BTU_FT2_DAY 
+        REAL ::  FLUX_BR_TO_FLUX_SI, BTU_FT2_DAY_TO_W_M2 
+        REAL ::  REFL 
+        REAL ::  AFW,BFW,CFW, BCONV
+        REAL ::  TDEW_F, TAIR_F, WIND_2M
+        REAL ::  TIMENEXT
 
 
 ******* Data declaration

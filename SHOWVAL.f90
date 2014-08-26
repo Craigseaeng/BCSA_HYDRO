@@ -151,7 +151,7 @@ SUBROUTINE SHOWVAL
   ! Tecplot.f90 call
   JSHPRT=JSHPRT+1
   IF(JSHPRT.LT.ISHPRT)RETURN
-  IF(isveg==1.and.outputflag/=0.or.istran(1).or.ISTRAN(3).or.ISTRAN(6)) CALL tecplot
+  IF(isveg==1.and.outputflag/=0.or.ISTRAN(1).EQ.1.or.ISTRAN(3).EQ.1.or.ISTRAN(6).EQ.1) CALL tecplot
   INQUIRE(file='ensight.inp',exist=status)
   IF(status) CALL ensight
   JSHPRT=1
