@@ -3,11 +3,15 @@ SUBROUTINE SHOWVAL
   ! *** REWRITTEN BY PAUL M. CRAIG  ON DEC 2006
        
   USE GLOBAL
+
   CHARACTER BLANK,ASTER,CSURF(32),CSALS(20),CSALB(20)
   CHARACTER UNITS*3, PARM*3
   LOGICAL status 
   SAVE    INFODT, JSHPRT, UNITS, SCALE, PARM
   REAL    T1,T2,TSPEED,ETA
+
+  ! MHS station output variables
+  INTEGER(4), SAVE :: MHSCOUNT
   
   DATA BLANK/' '/
   DATA ASTER/'*'/
@@ -29,10 +33,12 @@ SUBROUTINE SHOWVAL
     READ(1,*)NSHTYPE,NSHOWR,ICSHOW,JCSHOW,ISHPRT
     READ(1,*)ZSSMIN,ZSSMAX,SSALMAX
     CLOSE(1)
+
     NSHOWR=20
     NSHOWC=NSHOWR
     IF(ISHPRT.LT.1)ISHPRT=1
     JSHPRT=ISHPRT
+    MHSCOUNT=NTSPTC/NPPPH
 
     IF(NSHTYPE.GT.0.AND.NSHTYPE.LE.3)THEN
       SCALE=1.0
@@ -133,12 +139,21 @@ SUBROUTINE SHOWVAL
     ENDIF
   ENDIF
 
-  ! *** INCREMENT THE SCREEN COUNTER
+  ! MHS stations call
+  MHSCOUNT=MHSCOUNT+1
+  IF(MHSCOUNT.LT.NTSPTC/NPPPH) THEN
+    CONTINUE
+  ELSE
+    CALL mhs_out
+    MHSCOUNT=1
+  ENDIF
+
+  ! Tecplot.f90 call
   JSHPRT=JSHPRT+1
   IF(JSHPRT.LT.ISHPRT)RETURN
-  if(isveg==1.and.outputflag/=0.or.istran(1).or.ISTRAN(3).or.ISTRAN(6)) call tecplot !User defined output subroutine for Tecplot  
-  inquire(file='ensight.inp',exist=status)
-  if(status) call ensight
+  IF(isveg==1.and.outputflag/=0.or.istran(1).or.ISTRAN(3).or.ISTRAN(6)) CALL tecplot
+  INQUIRE(file='ensight.inp',exist=status)
+  IF(status) CALL ensight
   JSHPRT=1
   NSHOWC=NSHOWC+1
 
