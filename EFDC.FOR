@@ -2116,10 +2116,9 @@ CPMC        END IF
 CPMC      END IF
 
       WRITE(6,*) 'EFDC Done!'
-      PAUSE
 
 C***** Added By Meng Xia, Nov.19,2007
 
-!      STOP  
+      STOP  
       END  
 
