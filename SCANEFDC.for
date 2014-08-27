@@ -138,7 +138,7 @@
       NBBEM=MAX(1,NCBE)  
       NBBNM=MAX(1,NCBN)  
 
-      NCARD='66A'  
+C      NCARD='66A'  
       CALL SEEK('C66A')  
       READ(1,*,ERR=10) NLCDA,TSCDA,(ISCDA(K),K=1,7)  
       NLDAM=NLCDA

@@ -264,7 +264,7 @@ SUBROUTINE CALHDMF
         IF(ISDRY > 0)THEN
           DO K=1,KC
             DO L=LF,LL
-              IF(LWVMASK(L))THEN
+              IF(LWVMASK(L).EQ.1)THEN
                 IF(LMASKDRY(L))THEN
                   IF (WVDISP(L,K)>0) THEN
                     DTMPH=WVDISP(L,K)**0.3333
@@ -282,7 +282,7 @@ SUBROUTINE CALHDMF
         ELSE
           DO K=1,KC
             DO L=LF,LL
-              IF(LWVMASK(L))THEN
+              IF(LWVMASK(L).EQ.1)THEN
                 IF (WVDISP(L,K)>0) THEN
                   DTMPH=WVDISP(L,K)**0.3333
                 ELSE
