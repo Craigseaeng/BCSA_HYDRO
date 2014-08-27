@@ -129,7 +129,7 @@ IF(ISTRAN(6).EQ.1) THEN
 ! If sediment is NOT activated, create files but fill with -7999 value
 ELSE
     ! TSS calibration file
-    WRITE(105,299)  time_efdc, 1, -7999, -7999, -7999, -7999, -7999
+    WRITE(105,299)  time_efdc, 1, -7999.0, -7999.0, -7999.0, -7999.0, -7999.0
 
     ! Boundary calibration file
     WRITE(106, '(7F10.3)') time_efdc, SURFEL(LIJ(136,92)), &
