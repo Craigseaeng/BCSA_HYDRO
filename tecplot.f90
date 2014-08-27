@@ -222,7 +222,7 @@ ENDDO
 !ENDIF
 
 ! 2D ouput of tecplot2d.out for all cells
-!NAN=1.0/0.0
+NAN=1.0/0.0
 TAUAVG=0.0
 
 DO J=3,JC-2
@@ -271,11 +271,11 @@ DO J=3,JC-2
 
                 VMAGC(L)=SQRT(UTMPA**2+VTMPA**2)
 
-                IF(VMAGC(L).GT.VMAX(L)) THEN
+                IF(VMAGC(L).GT.VMAX(L).AND.VMAGC(L).NE.NAN) THEN
                     VMAX(L)=VMAGC(L)
                 ENDIF
 
-                IF(TAU(L).GT.TAUMAX(L)) THEN
+                IF(TAU(L).GT.TAUMAX(L).AND.TAU(L).NE.NAN) THEN
                     TAUMAX(L)=TAU(L)
                 ENDIF
             ENDIF
