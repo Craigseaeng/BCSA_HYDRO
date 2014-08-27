@@ -136,16 +136,16 @@ C
 
       !CALL CPU_TIME(TIME_START)        ! *** Intel Version 11.066 Bug - Work Around
 
-      COUNT = NARGS()
-	PAUSEIT = .true. !Set to .FALSE. to turn off hang-on-exit for calibration or sensitivity runs
+!      COUNT = NARGS()
+!	PAUSEIT = .true. !Set to .FALSE. to turn off hang-on-exit for calibration or sensitivity runs
 
       ! *** GET THE COMMAND LINE ARGUMENTS, IF ANY
-	IF(COUNT.GT.0)THEN
-	  CALL GETARG(1, BUFFER, iStatus)
-	  IF (Buffer(1:4).EQ.'-NOP'.OR.Buffer(1:4).EQ.'-nop') THEN
-          PAUSEIT=.FALSE.
-        ENDIF
-      ENDIF
+!	IF(COUNT.GT.0)THEN
+!	  CALL GETARG(1, BUFFER, iStatus)
+!	  IF (Buffer(1:4).EQ.'-NOP'.OR.Buffer(1:4).EQ.'-nop') THEN
+!          PAUSEIT=.FALSE.
+!        ENDIF
+!      ENDIF
 C  
 C *** EE END BLOCK  
 C  
@@ -2116,7 +2116,6 @@ CPMC        END IF
 CPMC      END IF
 
       WRITE(6,*) 'EFDC Done!'
-      PAUSE
 
 C***** Added By Meng Xia, Nov.19,2007
 

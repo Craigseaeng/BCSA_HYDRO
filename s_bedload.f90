@@ -59,7 +59,7 @@ SUBROUTINE BEDLOADJ
         UBL(2:LA,K)=0.0
         VBL(2:LA,K)=0.0
      ENDWHERE
-     IF(ISSLOPE)THEN !if bedslope is calculated
+     IF(ISSLOPE==1)THEN !if bedslope is calculated
        DO L=2,LA
          UTMP=UBL(L,K) !save original x-bedload velocity
          VTMP=VBL(L,K) !save original x-bedload velocity

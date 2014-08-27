@@ -15,7 +15,7 @@ C
         DO 11 J=1,N  
           IF(ABS(A(I,J)).GT.AAMAX) AAMAX=ABS(A(I,J))  
    11   CONTINUE  
-        IF(AAMAX.EQ.0.) PAUSE 'SINGULAR MATRIX.'  
+        IF(AAMAX.EQ.0.) print *, 'SINGULAR MATRIX.'  
         VV(I)=1./AAMAX  
    12 CONTINUE  
       DO 19 J=1,N  

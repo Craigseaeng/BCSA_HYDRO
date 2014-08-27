@@ -25,7 +25,7 @@ SUBROUTINE SEDZLJ_MAIN
 !Calculates the shear stresses from the velocity output of the hydro ! Temp moved to HDMT2T
 !  CALL SEDZLJ_SHEAR
   
-  IF(ISSLOPE)THEN
+  IF(ISSLOPE==1)THEN
     CALL SEDZLJ_SLOPE
   ELSE
     FORALL(L=2:LA)SH_SCALE(L)=1.0
