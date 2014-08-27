@@ -137,18 +137,18 @@ ELSE
 ENDIF
 
 ! Define not a number.  Only compatible with ifort
-NAN=1.0/0.0
+!NAN=1.0/0.0
 
 DO J=3,JC-2
 	DO I=3,IC-2
 	    IF(LIJ(I,J)>0) THEN
             IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
 
-                IF(VMAGC(L).GT.VMAX(L).AND.VMAGC(L).NE.NAN) THEN
+                IF(VMAGC(L).GT.VMAX(L)) THEN
                     VMAX(L)=VMAGC(L)
                 ENDIF
 
-                IF(TAU(L).GT.TAUMAX(L).AND.TAU(L).NE.NAN) THEN
+                IF(TAU(L).GT.TAUMAX(L)) THEN
                     TAUMAX(L)=TAU(L)
                 ENDIF
 

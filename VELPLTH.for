@@ -270,7 +270,7 @@ C
         IF(JSVPH.EQ.1)THEN  
           LINES=LA-1  
           OPEN(10,FILE='EE_VEL.OUT',STATUS='UNKNOWN',  
-     &        ACCESS='SEQUENTIAL',FORM='BINARY')  
+     &        ACCESS='SEQUENTIAL',FORM='UNFORMATTED')  
           VER=103  
           WRITE(10)VER,IC,JC,KC,LINES  
 
@@ -291,7 +291,7 @@ C
           DELT=DTDYN  
         ENDIF  
         OPEN(10,FILE='EE_VEL.OUT',POSITION='APPEND',STATUS='OLD',  
-     &      FORM='BINARY')  
+     &      FORM='UNFORMATTED')  
         WRITE (10)N,TIME,DELT  
 
         ! *** Write the UVW Instantaneous Velocity Field (Unrotated)
