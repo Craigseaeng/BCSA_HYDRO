@@ -271,8 +271,6 @@ C
             EVPGLPF(L)=0.  
             RINFLPF(L)=0.  
             GWLPF(L)=0. 
-            
-            TAULPF(L)=0.
              
           ENDDO  
         ELSE  
@@ -282,12 +280,14 @@ C
             RINFLPF(L)=RINFLPF(L)+RIFTR(L)  
             GWLPF(L)=GWLPF(L)+AGWELV(L)  
 
-C Craig Jones accumulate Tau 2014
-
-          TAULPF(L)=TAULPF(L)+TAU(L)
-
           ENDDO  
         ENDIF  
+
+C Craig Jones accumulate Tau 2014
+        DO L=2,LA  
+          TAULPF(L)=TAULPF(L)+TAU(L)
+        ENDDO  
+
         DO NT=1,NTOX  
           DO K=1,KB  
             DO L=2,LA  
@@ -422,13 +422,14 @@ C
             EVPGLPF(L)=EVPGLPF(L)+EVAPGW(L)  
             RINFLPF(L)=RINFLPF(L)+RIFTR(L)  
             GWLPF(L)=GWLPF(L)+AGWELV(L)  
-
-C Craig Jones accumulate Tau 2014
-
-          TAULPF(L)=TAULPF(L)+TAU(L)
-
           ENDDO  
         ENDIF  
+
+C Craig Jones accumulate Tau 2014
+        DO L=2,LA  
+          TAULPF(L)=TAULPF(L)+TAU(L)
+        ENDDO  
+
         DO NT=1,NTOX  
           DO K=1,KB  
             DO L=2,LA  

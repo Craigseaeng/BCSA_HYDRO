@@ -28,7 +28,7 @@ LOGICAL,SAVE::FIRSTTIME=.FALSE.
 !REAL Waterflow
 !REAL,DIMENSION(8)::Waterflowtot
 
-REAL,DIMENSION(LCM)::VMAX,TAUMAX,TAUAVG
+REAL,DIMENSION(LCM)::VMAX,TAUAVG
 
 ! Create files if first call
 IF(.NOT.FIRSTTIME)THEN
@@ -44,7 +44,7 @@ IF(.NOT.FIRSTTIME)THEN
 	WRITE(111,'(A30)')'TITLE = "EFDC 2D Tecplot Data"'
 
     ! Header for Sandia Coastal variables
-    WRITE(111,'(A)')'VARIABLES= "I","J","X","Y","U","V","HP","TAU","D50","THCK","Dye","TAUMAX","VMAX"'
+    WRITE(111,'(A)')'VARIABLES= "I","J","X","Y","U","V","HP","TAU","D50","THCK","Dye","TAUMAX","CAVG"'
     
     ! Header for BCSA variables
     !WRITE(111,*)'VARIABLES= "I","J","X","Y","TAU","TAUAVG","VMAX"'
@@ -283,7 +283,7 @@ DO J=3,JC-2
             ! Write tecplot data line for active cell    
             WRITE(111,'(I4,1X,I4,1X,11E17.7)')I,J,DLON(LIJ(I,J)),DLAT(LIJ(I,J)), &
 			    UTMPA,VTMPA,HP(LIJ(I,J)),TAU(LIJ(I,J)),D50AVG(LIJ(I,J)),THCK(LIJ(I,J)), &
-                DYE(LIJ(I,J),1),TAUMAX(LIJ(I,J)),VMAX(LIJ(I,J)) !Sandia Coastal
+                DYE(LIJ(I,J),1),TAUMAX(LIJ(I,J)),CAVGT(LIJ(I,J)) !Sandia Coastal
 
 !           WRITE(111,'(I4,1X,I4,1X,10E17.7)')I,J,DLON(LIJ(I,J)),DLAT(LIJ(I,J)), &
 !				TAUMAX(L),TAUAVG(L),CSMAX(L) !BCSA Average variables
