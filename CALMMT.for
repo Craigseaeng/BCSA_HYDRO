@@ -271,8 +271,6 @@ C
             EVPGLPF(L)=0.  
             RINFLPF(L)=0.  
             GWLPF(L)=0. 
-            
-            TAULPF(L)=0.
              
           ENDDO  
         ELSE  
@@ -282,12 +280,14 @@ C
             RINFLPF(L)=RINFLPF(L)+RIFTR(L)  
             GWLPF(L)=GWLPF(L)+AGWELV(L)  
 
-C Craig Jones accumulate Tau 2014
-
-          TAULPF(L)=TAULPF(L)+TAU(L)
-
           ENDDO  
         ENDIF  
+
+C Craig Jones accumulate Tau 2014
+        DO L=2,LA  
+          TAULPF(L)=TAULPF(L)+TAU(L)
+        ENDDO  
+
         DO NT=1,NTOX  
           DO K=1,KB  
             DO L=2,LA  
@@ -422,13 +422,14 @@ C
             EVPGLPF(L)=EVPGLPF(L)+EVAPGW(L)  
             RINFLPF(L)=RINFLPF(L)+RIFTR(L)  
             GWLPF(L)=GWLPF(L)+AGWELV(L)  
-
-C Craig Jones accumulate Tau 2014
-
-          TAULPF(L)=TAULPF(L)+TAU(L)
-
           ENDDO  
         ENDIF  
+
+C Craig Jones accumulate Tau 2014
+        DO L=2,LA  
+          TAULPF(L)=TAULPF(L)+TAU(L)
+        ENDDO  
+
         DO NT=1,NTOX  
           DO K=1,KB  
             DO L=2,LA  
@@ -974,35 +975,38 @@ C
       IF(ISSSMMT.EQ.1.AND.N.LT.NTS) GOTO 198  
       IF(ISRESTR.EQ.1)THEN  
         IF(JSRESTR.EQ.1)THEN  
-          OPEN(98,FILE='RESTRAN.OUT',STATUS='UNKNOWN')  
+          OPEN(98,FILE='RESTRAN.INP',FORM='UNFORMATTED',
+     +     STATUS='UNKNOWN')  
           CLOSE(98,STATUS='DELETE')  
-          OPEN(98,FILE='RESTRAN.OUT',STATUS='UNKNOWN')  
+          OPEN(98,FILE='RESTRAN.INP',FORM='UNFORMATTED',
+     +     STATUS='UNKNOWN')  
           JSRESTR=0  
         ELSE  
-          OPEN(98,FILE='RESTRAN.OUT',POSITION='APPEND',STATUS='UNKNOWN')
+          OPEN(98,FILE='RESTRAN.INP',POSITION='APPEND',
+     +    FORM='UNFORMATTED',STATUS='UNKNOWN')
         ENDIF  
         IF(NTSMMT.LT.NTSPTC)THEN  
           DO LT=2,LALT  
             I=ILLT(LT)  
             J=JLLT(LT)  
             L=LIJ(I,J)  
-            WRITE(98,907)HMP(L),HP_OLD(L),HP_NEW(L)  
-            WRITE (98,907) (UHDY2LPF(L,K),K=1,KC)
-            WRITE (98,907) (VHDX2LPF(L,K),K=1,KC) 
-            WRITE(98,907)(AHULPF(L,K),K=1,KC)  
-            WRITE(98,907)(AHVLPF(L,K),K=1,KC)  
-            WRITE(98,907)(SALLPF(L,K),K=1,KC)  
-            WRITE(98,907)(ABLPF(L,K),K=1,KS)  
-            WRITE(98,907)(ABEFF(L,K),K=1,KS)  
+            WRITE(98)HMP(L),HP_OLD(L),HP_NEW(L)  
+            WRITE(98)(UHDY2LPF(L,K),K=1,KC)
+            WRITE(98)(VHDX2LPF(L,K),K=1,KC) 
+            WRITE(98)(AHULPF(L,K),K=1,KC)  
+            WRITE(98)(AHVLPF(L,K),K=1,KC)  
+            WRITE(98)(SALLPF(L,K),K=1,KC)  
+            WRITE(98)(ABLPF(L,K),K=1,KS)  
+            WRITE(98)(ABEFF(L,K),K=1,KS)  
           ENDDO  
 
           do_1510: DO NS=1,NQSER
-              WRITE (98,907) (QSRTLPP(K,NS),K=1,KC)
-              WRITE (98,907) (QSRTLPN(K,NS),K=1,KC)
+              WRITE (98) (QSRTLPP(K,NS),K=1,KC)
+              WRITE (98) (QSRTLPN(K,NS),K=1,KC)
           END DO do_1510
 C
          do_1511: DO L=2,LA
-              WRITE (98,'(1E12.4)') TAULPF(L)
+              WRITE (98) TAULPF(L)
          END DO do_1511
 
         HP_OLD = HP_NEW   ! ARRAY OPERATION
@@ -1012,16 +1016,16 @@ C
             I=ILLT(LT)  
             J=JLLT(LT)  
             L=LIJ(I,J)  
-            WRITE(98,907)HMP(L),HLPF(L),QSUMELPF(L)  
-            WRITE(98,907)(UHLPF(L,K),K=1,KC)  
-            WRITE(98,907)(VHLPF(L,K),K=1,KC)  
-            WRITE(98,907)(VPZ(L,K),K=1,KC)  
-            WRITE(98,907)(AHULPF(L,K),K=1,KC)  
-            WRITE(98,907)(AHVLPF(L,K),K=1,KC)  
-            WRITE(98,907)(SALLPF(L,K),K=1,KC)  
-            WRITE(98,907)(VPX(L,K),K=1,KS)  
-            WRITE(98,907)(VPY(L,K),K=1,KS)  
-            WRITE(98,907)(ABLPF(L,K),K=1,KS)  
+            WRITE(98)HMP(L),HLPF(L),QSUMELPF(L)  
+            WRITE(98)(UHLPF(L,K),K=1,KC)  
+            WRITE(98)(VHLPF(L,K),K=1,KC)  
+            WRITE(98)(VPZ(L,K),K=1,KC)  
+            WRITE(98)(AHULPF(L,K),K=1,KC)  
+            WRITE(98)(AHVLPF(L,K),K=1,KC)  
+            WRITE(98)(SALLPF(L,K),K=1,KC)  
+            WRITE(98)(VPX(L,K),K=1,KS)  
+            WRITE(98)(VPY(L,K),K=1,KS)  
+            WRITE(98) (ABLPF(L,K),K=1,KS)  
           ENDDO  
 C
         ENDIF  
