@@ -25,7 +25,7 @@ C
 C
 C**********************************************************************C
 C
-      OPEN(99,FILE='RESTRAN.INP',STATUS='UNKNOWN')
+      OPEN(99,FILE='RESTRAN.INP',FORM='UNFORMATTED',STATUS='UNKNOWN')
 C
 C**********************************************************************C
 C

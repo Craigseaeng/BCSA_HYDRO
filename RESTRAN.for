@@ -7,37 +7,41 @@ C
      
       IF(NTSMMT.LT.NTSPTC)THEN  
         DO L=2,LA  
-          READ(99,907)HMP(L),HP_OLD(L),HP_NEW(L)  
-          READ(99,907)(UHDY2LPF(L,K),K=1,KC)
-          READ(99,907)(VHDX2LPF(L,K),K=1,KC) 
-          READ(99,907)(AHULPF(L,K),K=1,KC)  
-          READ(99,907)(AHVLPF(L,K),K=1,KC)  
-          READ(99,907)(SALLPF(L,K),K=1,KC)  
-          READ(99,907)(ABLPF(L,K),K=1,KS)  
-          READ(99,907)(ABEFF(L,K),K=1,KS)  
+          READ(99)HMP(L),HP_OLD(L),HP_NEW(L)  
+          READ(99)(UHDY2LPF(L,K),K=1,KC)
+          READ(99)(VHDX2LPF(L,K),K=1,KC) 
+          READ(99)(AHULPF(L,K),K=1,KC)  
+          READ(99)(AHVLPF(L,K),K=1,KC)  
+          READ(99)(SALLPF(L,K),K=1,KC)  
+          READ(99)(ABLPF(L,K),K=1,KS)  
+          READ(99)(ABEFF(L,K),K=1,KS)  
         ENDDO  
 
         do_120: DO NS=1,NQSER
-          READ(99,907) (QSRTLPP(K,NS),K=1,KC)
-          READ(99,907) (QSRTLPN(K,NS),K=1,KC)
+          READ(99) (QSRTLPP(K,NS),K=1,KC)
+          READ(99) (QSRTLPN(K,NS),K=1,KC)
         END DO do_120
 
         do_125: DO L=2,LA
-          READ(99,'(1E12.4)') TAU(L)
+          READ(99) TAULPF(L)
         END DO do_125
+
+        do_126: DO L=2,LA
+          TAU(L)=TAULPF(L)
+        END DO do_126
 
       ELSE  
         DO L=2,LA  
-          READ(99,907)HMP(L),HLPF(L),QSUMELPF(L)  
-          READ(99,907)(UHLPF(L,K),K=1,KC)  
-          READ(99,907)(VHLPF(L,K),K=1,KC)  
-          READ(99,907)(VPZ(L,K),K=1,KC)  
-          READ(99,907)(AHULPF(L,K),K=1,KC)  
-          READ(99,907)(AHVLPF(L,K),K=1,KC)  
-          READ(99,907)(SALLPF(L,K),K=1,KC)  
-          READ(99,907)(VPX(L,K),K=1,KS)  
-          READ(99,907)(VPY(L,K),K=1,KS)  
-          READ(99,907)(ABLPF(L,K),K=1,KS)  
+          READ(99)HMP(L),HLPF(L),QSUMELPF(L)  
+          READ(99)(UHLPF(L,K),K=1,KC)  
+          READ(99)(VHLPF(L,K),K=1,KC)  
+          READ(99)(VPZ(L,K),K=1,KC)  
+          READ(99)(AHULPF(L,K),K=1,KC)  
+          READ(99)(AHVLPF(L,K),K=1,KC)  
+          READ(99)(SALLPF(L,K),K=1,KC)  
+          READ(99)(VPX(L,K),K=1,KS)  
+          READ(99)(VPY(L,K),K=1,KS)  
+          READ(99)(ABLPF(L,K),K=1,KS)  
 C  
 C      READ(99,907)(ABEFF(L,K),K=1,KS)  
 C  
