@@ -10,8 +10,8 @@ IMPLICIT NONE
 INTEGER::I,J,L,K
 INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2,SIGN
 REAL::NAN
-REAL,DIMENSION(LCM)::SURFEL,VMAGC,VMAX
-REAL::deltat, time_efdc
+REAL,DIMENSION(LCM)::zeta,vel_maxc,vel_max,tau_max
+REAL::time_efdc
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
 !REAL Waterflow
 !REAL,DIMENSION(8)::Waterflowtot
@@ -42,9 +42,9 @@ IF(.NOT.FIRSTTIME)THEN
     OPEN (UNIT=107, FILE='shear_cal.dat', STATUS='REPLACE')
 
     ! Initialize variable for first time step
-    VMAGC=0.0
-    VMAX=0.0
-    TAUMAX=0.0
+    vel_maxc=0.0
+    vel_max=0.0
+    tau_max=0.0
 
 	FIRSTTIME=.TRUE.
 ENDIF
@@ -52,9 +52,6 @@ ENDIF
 ! EFDC time parameter
 time_efdc=DT*FLOAT(N)+TCON*TBEGIN 
 time_efdc=time_efdc/86400.
-
-! Timing parameters
-deltat=tidalp/float(ntsptc)
 
 !  Water flux at cross sections
 !DO LOC=1,5
@@ -95,14 +92,14 @@ DO  L=2,LA
     THCK(L)=TSEDT(L)-TSET0T(L)
 
     ! Calculate surface elevations and velocities for all cells and levels
-    SURFEL(L)=(HP(L)+BELV(L))
+    zeta(L)=(HP(L)+BELV(L))
 ENDDO 
 
 ! Write velocity calibration data each call
-WRITE(112,'(16F7.3)') time_efdc,SURFEL(LIJ(122,114)), &
-    U(LIJ(122,114),1),V(LIJ(122,114),1),SURFEL(LIJ(45,29)),U(LIJ(45,29),1),V(LIJ(45,29),1), &
-    SURFEL(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),SURFEL(LIJ(119,312)),U(LIJ(119,312),1), &
-    V(LIJ(119,312),1),SURFEL(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
+WRITE(112,'(16F7.3)') time_efdc,zeta(LIJ(122,114)), &
+    U(LIJ(122,114),1),V(LIJ(122,114),1),zeta(LIJ(45,29)),U(LIJ(45,29),1),V(LIJ(45,29),1), &
+    zeta(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),zeta(LIJ(119,312)),U(LIJ(119,312),1), &
+    V(LIJ(119,312),1),zeta(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
 
 ! Write flow calibration data each call
 !WRITE(113,'(6F7.3)')  time_efdc,Waterflowtot(1), &
@@ -122,8 +119,8 @@ IF(ISTRAN(6).EQ.1) THEN
     ENDDO
 
     ! Boundary calibration file with SEDZLJ
-    WRITE(106, '(7F10.3)') time_efdc, SURFEL(LIJ(136,92)), &
-     SAL(LIJ(136,92),1), SED(LIJ(136,92),1,1)+SED(LIJ(136,92),1,2), SURFEL(LIJ(77,8)), SAL(LIJ(77,8),1), &
+    WRITE(106, '(7F10.3)') time_efdc, zeta(LIJ(136,92)), &
+     SAL(LIJ(136,92),1), SED(LIJ(136,92),1,1)+SED(LIJ(136,92),1,2), zeta(LIJ(77,8)), SAL(LIJ(77,8),1), &
      SED(LIJ(77,8),1,1)+SED(LIJ(77,8),1,2)
 
 ! If sediment is NOT activated, create files but fill with -7999 value
@@ -132,8 +129,8 @@ ELSE
     WRITE(105,299)  time_efdc, 1, -7999.0, -7999.0, -7999.0, -7999.0, -7999.0
 
     ! Boundary calibration file
-    WRITE(106, '(7F10.3)') time_efdc, SURFEL(LIJ(136,92)), &
-        SAL(LIJ(136,92),1),-7999.0, SURFEL(LIJ(77,8)), SAL(LIJ(77,8),1),-7999.0
+    WRITE(106, '(7F10.3)') time_efdc, zeta(LIJ(136,92)), &
+        SAL(LIJ(136,92),1),-7999.0, zeta(LIJ(77,8)), SAL(LIJ(77,8),1),-7999.0
 ENDIF
 
 ! Define not a number.  Only compatible with ifort
@@ -144,12 +141,12 @@ DO J=3,JC-2
 	    IF(LIJ(I,J)>0) THEN
             IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
 
-                IF(VMAGC(L).GT.VMAX(L).AND.VMAGC(L).NE.NAN) THEN
-                    VMAX(L)=VMAGC(L)
+                IF(vel_maxc(L).GT.vel_max(L).AND.vel_maxc(L).NE.NAN) THEN
+                    vel_max(L)=vel_maxc(L)
                 ENDIF
 
-                IF(TAU(L).GT.TAUMAX(L).AND.TAU(L).NE.NAN) THEN
-                    TAUMAX(L)=TAU(L)
+                IF(TAU(L).GT.tau_max(L).AND.TAU(L).NE.NAN) THEN
+                    tau_max(L)=TAU(L)
                 ENDIF
 
             ENDIF
@@ -158,9 +155,9 @@ DO J=3,JC-2
 ENDDO
 
 ! Shear stress calibration file
-WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),TAUMAX(LIJ(122,114)),TAU(LIJ(45,29)),TAUMAX(LIJ(45,29)), &
-    TAU(LIJ(39,202)),TAUMAX(LIJ(39,202)),TAU(LIJ(119,312)),TAUMAX(LIJ(119,312)), &
-    TAU(LIJ(130,349)),TAUMAX(LIJ(130,349))
+WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),tau_max(LIJ(122,114)),TAU(LIJ(45,29)),tau_max(LIJ(45,29)), &
+    TAU(LIJ(39,202)),tau_max(LIJ(39,202)),TAU(LIJ(119,312)),tau_max(LIJ(119,312)), &
+    TAU(LIJ(130,349)),tau_max(LIJ(130,349))
 
 ! Format for tss_cal.dat file
 299 FORMAT(F7.3,2X,I1,F10.3,F10.3,F10.3,F10.3,F10.3)
