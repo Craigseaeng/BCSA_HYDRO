@@ -86,9 +86,9 @@ C
 C
 C *** EE BEGIN BLOCK  
 C  
-      !IF(IS_TIMING)THEN  
+      IF(IS_TIMING)THEN  
         !T1TMP=SECNDS(0.0)  
-      !ENDIF  
+      ENDIF  
 C  
 C *** EE END BLOCK  
 C  

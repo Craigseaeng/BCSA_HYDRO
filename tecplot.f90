@@ -16,13 +16,12 @@ IMPLICIT NONE
 INTEGER::I,J,LN,L,K,KK,ITEMPMSK,LOC
 INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2,SIGN
 INTEGER,DIMENSION(LCM)::NDAVG
-REAL::UTMP,VTMP,TEMPMSK,FLUXLOAD,NAN
+REAL::UTMP,VTMP,TEMPMSK,FLUXLOAD
 REAL::UTMPA,VTMPA,TEMPSTINC,LONTEMP,LATTEMP,WVTMP
 REAL,DIMENSION(KC)::CTEMP1
 REAL,DIMENSION(LCM)::UTMPS,VTMPS,VMAG,SURFEL
 REAL,DIMENSION(LCM)::DMAX,DAVG,VMAGC,CSMAX
-INTEGER,SAVE::nstep
-REAL::deltat,CPGV, time_efdc
+REAL::CPGV, time_efdc
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
 
 !REAL Waterflow
@@ -86,10 +85,6 @@ ENDIF
 ! EFDC time parameter
 time_efdc=DT*FLOAT(N)+TCON*TBEGIN 
 time_efdc=time_efdc/86400.
-
-! Timing parameters
-deltat=tidalp/float(ntsptc)
-nstep=nstep+1
 
 ! Tecplot customized output
 TEMPMSK=-1.0
@@ -222,7 +217,6 @@ ENDDO
 !ENDIF
 
 ! 2D ouput of tecplot2d.out for all cells
-NAN=1.0/0.0
 TAUAVG=0.0
 
 DO J=3,JC-2
@@ -271,11 +265,11 @@ DO J=3,JC-2
 
                 VMAGC(L)=SQRT(UTMPA**2+VTMPA**2)
 
-                IF(VMAGC(L).GT.VMAX(L).AND.VMAGC(L).NE.NAN) THEN
+                IF(VMAGC(L).GT.VMAX(L)) THEN
                     VMAX(L)=VMAGC(L)
                 ENDIF
 
-                IF(TAU(L).GT.TAUMAX(L).AND.TAU(L).NE.NAN) THEN
+                IF(TAU(L).GT.TAUMAX(L)) THEN
                     TAUMAX(L)=TAU(L)
                 ENDIF
             ENDIF

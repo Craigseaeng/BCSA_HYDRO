@@ -148,10 +148,14 @@ SUBROUTINE SHOWVAL
     MHSCOUNT=1
   ENDIF
 
-  ! Tecplot.f90 call
   JSHPRT=JSHPRT+1
   IF(JSHPRT.LT.ISHPRT)RETURN
-  IF(isveg==1.and.outputflag/=0.or.ISTRAN(1).EQ.1.or.ISTRAN(3).EQ.1.or.ISTRAN(6).EQ.1) CALL tecplot
+
+  ! Call tecplot.f90
+  !IF(isveg==1.and.outputflag/=0.or.ISTRAN(1).EQ.1.or.ISTRAN(3).EQ.1.or.ISTRAN(6).EQ.1) CALL tecplot
+
+  ! Call nc_out.f90
+  IF(isveg==1.and.outputflag/=0.or.ISTRAN(1).EQ.1.or.ISTRAN(3).EQ.1.or.ISTRAN(6).EQ.1) CALL nc_out
   INQUIRE(file='ensight.inp',exist=status)
   IF(status) CALL ensight
   JSHPRT=1

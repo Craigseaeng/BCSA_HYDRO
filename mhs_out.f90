@@ -9,7 +9,6 @@ IMPLICIT NONE
 
 INTEGER::I,J,L,K
 INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2,SIGN
-REAL::NAN
 REAL,DIMENSION(LCM)::zeta,vel_maxc,vel_max,tau_max
 REAL::time_efdc
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
@@ -91,7 +90,7 @@ DO  L=2,LA
 	TSEDT(L)=SUM(TSED(1:KB,L)/BULKDENS(1:KB,L))
     THCK(L)=TSEDT(L)-TSET0T(L)
 
-    ! Calculate surface elevations and velocities for all cells and levels
+    ! Calculate surface elevations and velocities for all active cells
     zeta(L)=(HP(L)+BELV(L))
 ENDDO 
 
@@ -133,19 +132,16 @@ ELSE
         SAL(LIJ(136,92),1),-7999.0, zeta(LIJ(77,8)), SAL(LIJ(77,8),1),-7999.0
 ENDIF
 
-! Define not a number.  Only compatible with ifort
-NAN=1.0/0.0
-
 DO J=3,JC-2
 	DO I=3,IC-2
 	    IF(LIJ(I,J)>0) THEN
             IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
 
-                IF(vel_maxc(L).GT.vel_max(L).AND.vel_maxc(L).NE.NAN) THEN
+                IF(vel_maxc(L).GT.vel_max(L)) THEN
                     vel_max(L)=vel_maxc(L)
                 ENDIF
 
-                IF(TAU(L).GT.tau_max(L).AND.TAU(L).NE.NAN) THEN
+                IF(TAU(L).GT.tau_max(L)) THEN
                     tau_max(L)=TAU(L)
                 ENDIF
 

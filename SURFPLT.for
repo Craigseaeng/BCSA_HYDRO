@@ -70,14 +70,14 @@ C
           OPEN(10,FILE='EE_WS.OUT',STATUS='UNKNOWN')
           CLOSE(10,STATUS='DELETE')  
           OPEN(10,FILE='EE_WS.OUT',STATUS='UNKNOWN',  
-     &        ACCESS='SEQUENTIAL',FORM='BINARY')  
+     &        ACCESS='SEQUENTIAL',FORM='UNFORMATTED')  
           VER=101  
           WRITE(10)VER,IC,JC,LINES  
           JSPPH=0  
           CLOSE(10)  
         ENDIF  
         OPEN(10,FILE='EE_WS.OUT',POSITION='APPEND',STATUS='OLD',  
-     &      FORM='BINARY')  
+     &      FORM='UNFORMATTED')  
         IF(ISDYNSTP.EQ.0)THEN  
           TIME=DT*FLOAT(N)+TCON*TBEGIN  
         ELSE  
