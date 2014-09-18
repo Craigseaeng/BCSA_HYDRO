@@ -102,7 +102,7 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_att(ncid, tss_varid, 'units', 'mg/L') 
 
     ! Define wet dry mask
-    status=nf90_def_var(ncid,'wet_dry',nf90_int,(/lcm_dimid, time_dimid/),mask_varid)
+    status=nf90_def_var(ncid,'wet_dry',nf90_real,(/lcm_dimid, time_dimid/),mask_varid)
     status=nf90_put_att(ncid, mask_varid, 'long_name', 'EFDC wet dry mask')
     status=nf90_put_att(ncid, mask_varid, 'units', '0 = dry, 1 = wet')
 
