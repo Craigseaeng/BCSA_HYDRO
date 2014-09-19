@@ -71,7 +71,7 @@ SUBROUTINE SEDZLJ(L)
         PFY(K)=EXP(-0.25d0*PY(K)*PY(K)) !PFY(K)=0.39894*EXP(-0.5*PY(K)*PY(K)) CAJ's old formula A&S 7.1.25
         PX(K)=1.0/(1.0+0.235235*PY(K)) !PX(K)=1.0/(1.0+0.3327*PY(K)) CAJ's old formulation A&S 7.1.25
         PROB(K)=1.0-PFY(K)*(0.34802*PX(K)-0.09587*PX(K)*PX(K)+0.74785*PX(K)**3) !A&S 7.1.25 a1, a2, a3 used (added "1.0-" 1/9/13)
-        IF(TAU(L)>TCRSUS(K))PROB(K)=0.0 !Need to incorporate into the if an structure
+!        IF(TAU(L)>TCRSUS(K))PROB(K)=0.0 !Need to incorporate into the if an structure
 
      ELSEIF(TAU(L)<=TCRSUS(K))THEN !Fine sediment deposition (Krone)
         PROB(K)=1.0-TAU(L)/(TCRSUS(K)) !deposition probability is calculated
@@ -276,7 +276,7 @@ SUBROUTINE SEDZLJ(L)
      IF(LL>2)THEN !calculate erosion rates of deeper layers
 !        SN00=(TAUDD(2)-TAU(L))/(TAUDD(2)-TAUDD(1)) !weighting factor 1 for interpolation
 !        SN10=(TAUDD(1)-TAU(L))/(TAUDD(1)-TAUDD(2)) !weighting factor 2
-        SN00=A_P(LL,L)*(TAU(L)/10)**N_P(LL,L) ! Erosion rate 1 (cm/s) Values assume shear in Pascals so conversion made here
+        SN00=A_P(LL,L)*(TAU(L)/10)**N_P(LL,L) ! Erosion rate 1 (cm/s) Values assume shear in Pascals so conversion to dynes made here
 
         IF(LL+1<=KB)THEN !modeled erosion rate in g/cm2/s Limited by bottom
           SN10=A_P(LL+1,L)*(TAU(L)/10)**N_P(LL+1,L) ! Erosion rate 2
@@ -301,7 +301,7 @@ SUBROUTINE SEDZLJ(L)
 !        SN01=D50TMPP/NSCTOT                        !weighting factor 3
 !        SN11=(NSCTOT-D50TMPP)/NSCTOT               !weighting factor 4
 
-        SN00=A_ND(NSC0)*(TAU(L)/10)**N_ND(NSC0) ! Erosion rate 1 (cm/s) Values assume shear in Pascals so conversion made here
+        SN00=A_ND(NSC0)*(TAU(L)/10)**N_ND(NSC0) ! Erosion rate 1 (cm/s) Values assume shear in Pascals so conversion to dynes made here
         SN10=A_ND(NSC1)*(TAU(L)/10)**N_ND(NSC1) ! Erosion rate 2
 !        ERATEMOD(L)=(SN00*EXP(SN11*LOG(ERATEND(NSC0,NTAU0))+SN01*LOG(ERATEND(NSC1,NTAU0)))+SN10*EXP(SN11*LOG(ERATEND(NSC0,NTAU1))+SN01*LOG(ERATEND(NSC1,NTAU1))))*BULKDENS(LL,L)*SQRT(1./SH_SCALE(L)) !log-linear interpolation
         ERATEMOD(L)=((SN10-SN00)/NSCTOT*D50TMPP+SN00)*BULKDENS(LL,L)*SQRT(1./SH_SCALE(L)) !linear interpolation around size class (g/cm2/s)
