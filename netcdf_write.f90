@@ -13,29 +13,31 @@ IMPLICIT NONE
 LOGICAL,SAVE::FIRST_NETCDF=.FALSE.
 CHARACTER (len = *), PARAMETER :: FILE_NAME = "efdc_his.nc"
 INTEGER, SAVE :: nc_step, ncid
-INTEGER :: I, J, L, status
-INTEGER, SAVE :: I_dimid,J_dimid,time_dimid
+INTEGER :: I, J, L, S, status
+INTEGER, SAVE :: I_dimid,J_dimid,k_dimid,time_dimid
 INTEGER, SAVE :: ts_varid,time_varid,X_varid,Y_varid
 INTEGER, SAVE :: surfel_varid,u_varid,v_varid,sal_varid, dye_varid
-INTEGER, SAVE :: tau_varid,d50_varid,thick_varid
+INTEGER, SAVE :: tss_varid, tau_varid,d50_varid,thick_varid
 
-INTEGER :: nstep, start(1), start_3d(3), count_3d(3)
+INTEGER :: nstep, start(1), start_3d(3), start_4d(4)
 REAL, DIMENSION(1) :: deltat, time_efdc
 REAL, DIMENSION(LCM) :: zeta, wet_dry_mask
 
 ! Allocate 2D array variables
 REAL, ALLOCATABLE, DIMENSION(:,:) :: lat,lon,wl,u_2d,v_2d,salt,dye_2d,bed_shear
 REAL, ALLOCATABLE, DIMENSION(:,:) :: grain_size,sed_thick
-ALLOCATE(lat(IC-2,JC-2))
-ALLOCATE(lon(IC-2,JC-2))
-ALLOCATE(wl(IC-2,JC-2))
-ALLOCATE(u_2d(IC-2,JC-2))
-ALLOCATE(v_2d(IC-2,JC-2))
-ALLOCATE(salt(IC-2,JC-2))
-ALLOCATE(dye_2d(IC-2,JC-2))
-ALLOCATE(bed_shear(IC-2,JC-2))
-ALLOCATE(grain_size(IC-2,JC-2))
-ALLOCATE(sed_thick(IC-2,JC-2))
+REAL, ALLOCATABLE, DIMENSION(:,:,:) :: tss
+ALLOCATE(lat(JC-2,IC-2))
+ALLOCATE(lon(JC-2,IC-2))
+ALLOCATE(wl(JC-2,IC-2))
+ALLOCATE(u_2d(JC-2,IC-2))
+ALLOCATE(v_2d(JC-2,IC-2))
+ALLOCATE(salt(JC-2,IC-2))
+ALLOCATE(dye_2d(JC-2,IC-2))
+ALLOCATE(bed_shear(JC-2,IC-2))
+ALLOCATE(grain_size(JC-2,IC-2))
+ALLOCATE(sed_thick(JC-2,IC-2))
+ALLOCATE(tss(JC-2,IC-2,NSCM))
 
 ! EFDC time parameter
 time_efdc=DT*FLOAT(N)+TCON*TBEGIN
@@ -48,37 +50,50 @@ nc_step=nc_step+1
 ! Current write step
 start=(/nc_step/)
 start_3d=(/1,1,nc_step/)
-count_3d=(/IC-4,JC-4,1/)
+start_4d=(/1,1,1,nc_step/)
+
+DO L=2,LA
+    ! Calculate surface elevations for all active cells
+    zeta(L)=(HP(L)+BELV(L))
+
+    ! Create wet dry mask
+    IF (HP(L)<=HDRY) THEN
+        wet_dry_mask(L)=0
+    ELSE
+        wet_dry_mask(L)=1
+    ENDIF
+
+ENDDO
 
 ! Create 2D arrays for all time variable parameters
 DO I=3,IC-2
    DO J=3,JC-2
       IF(LIJ(I,J)>0) THEN
-         wl(I,J)=zeta(LIJ(I,J))
-         u_2d(I,J)=U(LIJ(I,J),1)
-         v_2d(I,J)=V(LIJ(I,J),1)
-         salt(I,J)=SAL(LIJ(I,J),1)
-         dye_2d(I,J)=DYE(LIJ(I,J),1)
-         bed_shear(I,J)=TAU(LIJ(I,J))
-         grain_size(I,J)=D50AVG(LIJ(I,J))
-         sed_thick(I,J)=THCK(LIJ(I,J))
+        IF(wet_dry_mask(LIJ(I,J))==1) THEN
+         wl(J,I)=zeta(LIJ(I,J))
+         u_2d(J,I)=U(LIJ(I,J),1)
+         v_2d(J,I)=V(LIJ(I,J),1)
+         salt(J,I)=SAL(LIJ(I,J),1)
+         dye_2d(J,I)=DYE(LIJ(I,J),1)
+         bed_shear(J,I)=TAU(LIJ(I,J))
+         grain_size(J,I)=D50AVG(LIJ(I,J))
+         sed_thick(J,I)=THCK(LIJ(I,J))
+         DO S=1,NSCM
+            tss(J,I,S)=SED(LIJ(I,J),1,S)
+         ENDDO
       ELSE
          ! Flag for inactive cells
-         wl(I,J)=-7999.
-         u_2d(I,J)=-7999.
-         v_2d(I,J)=-7999.
-         salt(I,J)=-7999.
-         dye_2d(I,J)=-7999.
-         bed_shear(I,J)=-7999.
-         grain_size(I,J)=-7999.
-         sed_thick(I,J)=-7999.
+         wl(J,I)=-7999.
+         u_2d(J,I)=-7999.
+         v_2d(J,I)=-7999.
+         salt(J,I)=-7999.
+         dye_2d(J,I)=-7999.
+         bed_shear(J,I)=-7999.
+         grain_size(J,I)=-7999.
+         sed_thick(J,I)=-7999.
+        ENDIF
       ENDIF
    ENDDO
-ENDDO
-
-DO L=2,LA
-    ! Calculate surface elevations for all active cells
-    zeta(L)=(HP(L)+BELV(L))
 ENDDO
 
 IF(.NOT.FIRST_NETCDF)THEN
@@ -87,11 +102,11 @@ IF(.NOT.FIRST_NETCDF)THEN
    DO I=3,IC-2
       DO J=3,JC-2
          IF(LIJ(I,J)>0) THEN
-            lat(I,J)=DLAT(LIJ(I,J))
-            lon(I,J)=DLON(LIJ(I,J))
+            lat(J,I)=DLAT(LIJ(I,J))
+            lon(J,I)=DLON(LIJ(I,J))
          ELSE
-            lat(I,J)=-7999.
-            lon(I,J)=-7999.
+            lat(J,I)=-7999.
+            lon(J,I)=-7999.
          ENDIF
       ENDDO
    ENDDO
@@ -118,6 +133,7 @@ IF(.NOT.FIRST_NETCDF)THEN
     ! Define dimensions
     status=nf90_def_dim(ncid,'I',IC-2,I_dimid)
     status=nf90_def_dim(ncid,'J',JC-2,J_dimid)
+    status=nf90_def_dim(ncid,'NSCM',NSCM,k_dimid)
     status=nf90_def_dim(ncid,'efdc_time',nf90_unlimited,time_dimid)
 
     ! Define model time
@@ -127,55 +143,60 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_att(ncid, time_varid, 'calendar', 'gregorian')
 
     ! Define coordinates variables
-    status=nf90_def_var(ncid,'X',nf90_float,(/I_dimid,J_dimid/),X_varid)
+    status=nf90_def_var(ncid,'X',nf90_float,(/J_dimid,I_dimid/),X_varid)
     status=nf90_put_att(ncid, X_varid, 'long_name', 'X coordinate')
     status=nf90_put_att(ncid, X_varid, 'units', 'meters')
     status=nf90_put_att(ncid, X_varid, 'fill_value', -7999)
 
-    status=nf90_def_var(ncid,'Y',nf90_float,(/I_dimid,J_dimid/),Y_varid)
+    status=nf90_def_var(ncid,'Y',nf90_float,(/J_dimid,I_dimid/),Y_varid)
     status=nf90_put_att(ncid, Y_varid, 'long_name', 'Y coordinate')
     status=nf90_put_att(ncid, Y_varid, 'units', 'meters')
     status=nf90_put_att(ncid, Y_varid, 'fill_value', -7999)
 
     ! Define water surface elevation
-    status=nf90_def_var(ncid,'zeta',nf90_real,(/I_dimid, J_dimid, time_dimid/),surfel_varid)
+    status=nf90_def_var(ncid,'zeta',nf90_real,(/J_dimid,I_dimid, time_dimid/),surfel_varid)
     status=nf90_put_att(ncid, surfel_varid, 'long_name', 'EFDC surface elevation')
     status=nf90_put_att(ncid, surfel_varid, 'units', 'meters')
 
-!    ! Define u component velocity
-!    status=nf90_def_var(ncid,'u',nf90_float,(/I_dimid, J_dimid, time_dimid/),u_varid)
-!    status=nf90_put_att(ncid, u_varid, 'long_name', 'EFDC u component velocity')
-!    status=nf90_put_att(ncid, u_varid, 'units', 'meters second-1')
-!
-!    ! Define v component velocity
-!    status=nf90_def_var(ncid,'v',nf90_float,(/I_dimid, J_dimid, time_dimid/),v_varid)
-!    status=nf90_put_att(ncid, v_varid, 'long_name', 'EFDC v component velocity')
-!    status=nf90_put_att(ncid, v_varid, 'units', 'meters second-1')
-!
-!    ! Define salinity
-!    status=nf90_def_var(ncid,'salt',nf90_float,(/I_dimid, J_dimid, time_dimid/),sal_varid)
-!    status=nf90_put_att(ncid, sal_varid, 'long_name', 'EFDC salinity')
-!    status=nf90_put_att(ncid, sal_varid, 'units', 'psu')
-!
-!    ! Define dye concentration
-!    status=nf90_def_var(ncid,'dye',nf90_float,(/I_dimid, J_dimid, time_dimid/),dye_varid)
-!    status=nf90_put_att(ncid, dye_varid, 'long_name', 'EFDC dye concentration')
-!    status=nf90_put_att(ncid, dye_varid, 'units', 'mg/L')
-!
-!    ! Define bed shear
-!    status=nf90_def_var(ncid,'tau',nf90_float,(/I_dimid, J_dimid, time_dimid/),tau_varid)
-!    status=nf90_put_att(ncid, tau_varid, 'long_name', 'EFDC bed shear')
-!    status=nf90_put_att(ncid, tau_varid, 'units', 'dynes/cm^2')
-!
-!    ! Define D50 grain size
-!    status=nf90_def_var(ncid,'D50',nf90_float,(/I_dimid, J_dimid, time_dimid/),d50_varid)
-!    status=nf90_put_att(ncid, d50_varid, 'long_name', 'EFDC D50 grain size')
-!    status=nf90_put_att(ncid, d50_varid, 'units', 'um')
-!
-!    ! Define sediment thickness
-!    status=nf90_def_var(ncid,'thickness',nf90_float,(/I_dimid, J_dimid, time_dimid/),thick_varid)
-!    status=nf90_put_att(ncid, thick_varid, 'long_name', 'EFDC sediment thickness')
-!    status=nf90_put_att(ncid, thick_varid, 'units', 'meters')
+    ! Define u component velocity
+    status=nf90_def_var(ncid,'u',nf90_float,(/J_dimid,I_dimid, time_dimid/),u_varid)
+    status=nf90_put_att(ncid, u_varid, 'long_name', 'EFDC u component velocity')
+    status=nf90_put_att(ncid, u_varid, 'units', 'meters second-1')
+
+    ! Define v component velocity
+    status=nf90_def_var(ncid,'v',nf90_float,(/J_dimid,I_dimid, time_dimid/),v_varid)
+    status=nf90_put_att(ncid, v_varid, 'long_name', 'EFDC v component velocity')
+    status=nf90_put_att(ncid, v_varid, 'units', 'meters second-1')
+
+    ! Define salinity
+    status=nf90_def_var(ncid,'salt',nf90_float,(/J_dimid,I_dimid, time_dimid/),sal_varid)
+    status=nf90_put_att(ncid, sal_varid, 'long_name', 'EFDC salinity')
+    status=nf90_put_att(ncid, sal_varid, 'units', 'psu')
+
+    ! Define dye concentration
+    status=nf90_def_var(ncid,'dye',nf90_float,(/J_dimid,I_dimid, time_dimid/),dye_varid)
+    status=nf90_put_att(ncid, dye_varid, 'long_name', 'EFDC dye concentration')
+    status=nf90_put_att(ncid, dye_varid, 'units', 'mg/L')
+
+    ! Define water column TSS
+    status=nf90_def_var(ncid,'tss',nf90_float,(/J_dimid,I_dimid,k_dimid,time_dimid/),tss_varid)
+    status=nf90_put_att(ncid, tss_varid, 'long_name', 'Water column TSS')
+    status=nf90_put_att(ncid, tss_varid, 'units', 'mg/L')
+
+    ! Define bed shear
+    status=nf90_def_var(ncid,'tau',nf90_float,(/J_dimid,I_dimid, time_dimid/),tau_varid)
+    status=nf90_put_att(ncid, tau_varid, 'long_name', 'EFDC bed shear')
+    status=nf90_put_att(ncid, tau_varid, 'units', 'dynes/cm^2')
+
+    ! Define D50 grain size
+    status=nf90_def_var(ncid,'D50',nf90_float,(/J_dimid,I_dimid, time_dimid/),d50_varid)
+    status=nf90_put_att(ncid, d50_varid, 'long_name', 'EFDC D50 grain size')
+    status=nf90_put_att(ncid, d50_varid, 'units', 'um')
+
+    ! Define sediment thickness
+    status=nf90_def_var(ncid,'thickness',nf90_float,(/J_dimid,I_dimid, time_dimid/),thick_varid)
+    status=nf90_put_att(ncid, thick_varid, 'long_name', 'EFDC sediment thickness')
+    status=nf90_put_att(ncid, thick_varid, 'units', 'meters')
 
     ! End define mode
     status=nf90_enddef(ncid)
@@ -185,42 +206,59 @@ IF(.NOT.FIRST_NETCDF)THEN
 
     ! Put EFDC time step into file once
     status=nf90_put_var(ncid, ts_varid, deltat)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put first EFDC time in days into file
     status=nf90_put_var(ncid, time_varid, time_efdc, start=start)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put coordinates into file
     status=nf90_put_var(ncid,X_varid,lon)
+    if(status /= nf90_NoErr) call handle_err(status)
     status=nf90_put_var(ncid,Y_varid,lat)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put first surface elevation into file
-    status=nf90_put_var(ncid,surfel_varid,wl,start=start_3d, count=count_3d)
+    status=nf90_put_var(ncid,surfel_varid,wl,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-!    ! Put first u component into file
-!    status=nf90_put_var(ncid,u_varid,u_2d,start=start_3d, count=count_3d)
-!    
-!    ! Put first v component into file
-!    status=nf90_put_var(ncid,v_varid,v_2d,start=start_3d, count=count_3d)
-!
-!    ! Put first salinity into file
-!    status=nf90_put_var(ncid,sal_varid,salt,start=start_3d, count=count_3d)
-!
-!    ! Put first dye into file
-!    status=nf90_put_var(ncid,dye_varid,dye_2d,start=start_3d, count=count_3d)
-!
-!    ! Put first tau into file
-!    status=nf90_put_var(ncid,tau_varid,bed_shear,start=start_3d, count=count_3d)
-!
-!    ! Put first D50 into file
-!    status=nf90_put_var(ncid,d50_varid,grain_size,start=start_3d, count=count_3d)
-!
-!    ! Put first sediment thickness into file
-!    status=nf90_put_var(ncid,thick_varid,sed_thick,start=start_3d, count=count_3d)
+    ! Put first u component into file
+    status=nf90_put_var(ncid,u_varid,u_2d,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+    
+    ! Put first v component into file
+    status=nf90_put_var(ncid,v_varid,v_2d,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put first salinity into file
+    status=nf90_put_var(ncid,sal_varid,salt,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put first dye into file
+    status=nf90_put_var(ncid,dye_varid,dye_2d,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put first TSS into file
+    status=nf90_put_var(ncid,tss_varid,tss,start=start_4d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put first tau into file
+    status=nf90_put_var(ncid,tau_varid,bed_shear,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put first D50 into file
+    status=nf90_put_var(ncid,d50_varid,grain_size,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put first sediment thickness into file
+    status=nf90_put_var(ncid,thick_varid,sed_thick,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     FIRST_NETCDF=.TRUE.
     
     ! Close NetCDF file after first write
     status=nf90_close(ncid)
+    if(status /= nf90_NoErr) call handle_err(status)
 
 ELSE
 
@@ -229,49 +267,53 @@ ELSE
 
     ! Open NetCDF file
     status=nf90_open(FILE_NAME, nf90_write, ncid)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put EFDC times into file
     status=nf90_put_var(ncid, time_varid, time_efdc, start=start)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put surface elevations into file
-    status=nf90_put_var(ncid,surfel_varid,wl,start=start_3d, count=count_3d)
+    status=nf90_put_var(ncid,surfel_varid,wl,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-!    ! Put u components into file
-!    status=nf90_put_var(ncid,u_varid,u_2d,start=start_3d, count=count_3d)
-!    
-!    ! Put v components into file
-!    status=nf90_put_var(ncid,v_varid,v_2d,start=start_3d, count=count_3d)
-!
-!    ! Put salinities into file
-!    status=nf90_put_var(ncid,sal_varid,salt,start=start_3d, count=count_3d)
-!
-!    ! Put dye into file
-!    status=nf90_put_var(ncid,dye_varid,dye_2d,start=start_3d, count=count_3d)
-!
-!    ! Put tau into file
-!    status=nf90_put_var(ncid,tau_varid,bed_shear,start=start_3d, count=count_3d)
-!
-!    ! Put D50 into file
-!    status=nf90_put_var(ncid,d50_varid,grain_size,start=start_3d, count=count_3d)
-!
-!    ! Put sediment thickness into file
-!    status=nf90_put_var(ncid,thick_varid,sed_thick,start=start_3d, count=count_3d)
+    ! Put u components into file
+    status=nf90_put_var(ncid,u_varid,u_2d,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+    
+    ! Put v components into file
+    status=nf90_put_var(ncid,v_varid,v_2d,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put salinities into file
+    status=nf90_put_var(ncid,sal_varid,salt,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put dye into file
+    status=nf90_put_var(ncid,dye_varid,dye_2d,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put TSS into file
+    status=nf90_put_var(ncid,tss_varid,tss,start=start_4d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put tau into file
+    status=nf90_put_var(ncid,tau_varid,bed_shear,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put D50 into file
+    status=nf90_put_var(ncid,d50_varid,grain_size,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+
+    ! Put sediment thickness into file
+    status=nf90_put_var(ncid,thick_varid,sed_thick,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     ! Close NetCDF file each time
     status=nf90_close(ncid)
+    if(status /= nf90_NoErr) call handle_err(status)
 
 ENDIF
-
-!DEALLOCATE(lat(IC-2,JC-2))
-!DEALLOCATE(lon(IC-2,JC-2))
-!DEALLOCATE(wl(IC-2,JC-2))
-!DEALLOCATE(u_2d(IC-2,JC-2))
-!DEALLOCATE(v_2d(IC-2,JC-2))
-!DEALLOCATE(salt(IC-2,JC-2))
-!DEALLOCATE(dye_2d(IC-2,JC-2))
-!DEALLOCATE(bed_shear(IC-2,JC-2))
-!DEALLOCATE(grain_size(IC-2,JC-2))
-!DEALLOCATE(sed_thick(IC-2,JC-2))
 
 CONTAINS
     SUBROUTINE handle_err(status)
