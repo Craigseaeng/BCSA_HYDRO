@@ -14,19 +14,20 @@ LOGICAL,SAVE::FIRST_NETCDF=.FALSE.
 CHARACTER (len = *), PARAMETER :: FILE_NAME = "efdc_his.nc"
 INTEGER, SAVE :: nc_step, ncid
 INTEGER :: I, J, L, S, status
-INTEGER, SAVE :: I_dimid,J_dimid,k_dimid,time_dimid
+INTEGER, SAVE :: I_dimid,J_dimid,k_dimid,time_dimid,mask_varid
 INTEGER, SAVE :: ts_varid,time_varid,X_varid,Y_varid
 INTEGER, SAVE :: surfel_varid,u_varid,v_varid,sal_varid, dye_varid
 INTEGER, SAVE :: tss_varid, tau_varid,d50_varid,thick_varid
 
 INTEGER :: nstep, start(1), start_3d(3), start_4d(4)
 REAL, DIMENSION(1) :: deltat, time_efdc
-REAL, DIMENSION(LCM) :: zeta, wet_dry_mask
+REAL, DIMENSION(LCM) :: zeta,wet_dry_mask
 
 ! Allocate 2D array variables
-REAL, ALLOCATABLE, DIMENSION(:,:) :: lat,lon,wl,u_2d,v_2d,salt,dye_2d,bed_shear
-REAL, ALLOCATABLE, DIMENSION(:,:) :: grain_size,sed_thick
+REAL, ALLOCATABLE, DIMENSION(:,:) :: lat,lon,mask,wl,u_2d,v_2d,salt,dye_2d
+REAL, ALLOCATABLE, DIMENSION(:,:) :: bed_shear,grain_size,sed_thick
 REAL, ALLOCATABLE, DIMENSION(:,:,:) :: tss
+ALLOCATE(mask(JC-2,IC-2))
 ALLOCATE(lat(JC-2,IC-2))
 ALLOCATE(lon(JC-2,IC-2))
 ALLOCATE(wl(JC-2,IC-2))
@@ -58,9 +59,9 @@ DO L=2,LA
 
     ! Create wet dry mask
     IF (HP(L)<=HDRY) THEN
-        wet_dry_mask(L)=0
+        wet_dry_mask(L)=-99.
     ELSE
-        wet_dry_mask(L)=1
+        wet_dry_mask(L)=1.
     ENDIF
 
 ENDDO
@@ -69,7 +70,7 @@ ENDDO
 DO I=3,IC-2
    DO J=3,JC-2
       IF(LIJ(I,J)>0) THEN
-        IF(wet_dry_mask(LIJ(I,J))==1) THEN
+		 mask(J,I)=wet_dry_mask(LIJ(I,J))
          wl(J,I)=zeta(LIJ(I,J))
          u_2d(J,I)=U(LIJ(I,J),1)
          v_2d(J,I)=V(LIJ(I,J),1)
@@ -83,6 +84,7 @@ DO I=3,IC-2
          ENDDO
       ELSE
          ! Flag for inactive cells
+		 mask(J,I)=-7999.
          wl(J,I)=-7999.
          u_2d(J,I)=-7999.
          v_2d(J,I)=-7999.
@@ -91,7 +93,6 @@ DO I=3,IC-2
          bed_shear(J,I)=-7999.
          grain_size(J,I)=-7999.
          sed_thick(J,I)=-7999.
-        ENDIF
       ENDIF
    ENDDO
 ENDDO
@@ -152,6 +153,12 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_att(ncid, Y_varid, 'long_name', 'Y coordinate')
     status=nf90_put_att(ncid, Y_varid, 'units', 'meters')
     status=nf90_put_att(ncid, Y_varid, 'fill_value', -7999)
+	
+	! Define wet dry mask
+    status=nf90_def_var(ncid,'wet_dry_mask',nf90_real,(/J_dimid,I_dimid, time_dimid/),mask_varid)
+    status=nf90_put_att(ncid, mask_varid, 'long_name', 'Wet Dry Mask')
+    status=nf90_put_att(ncid, mask_varid, 'dry_flag', '-99')
+	status=nf90_put_att(ncid, mask_varid, 'wet_flag', '1')
 
     ! Define water surface elevation
     status=nf90_def_var(ncid,'zeta',nf90_real,(/J_dimid,I_dimid, time_dimid/),surfel_varid)
@@ -217,6 +224,10 @@ IF(.NOT.FIRST_NETCDF)THEN
     if(status /= nf90_NoErr) call handle_err(status)
     status=nf90_put_var(ncid,Y_varid,lat)
     if(status /= nf90_NoErr) call handle_err(status)
+	
+	! Put first wet dry mask into file
+    status=nf90_put_var(ncid,mask_varid,mask,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put first surface elevation into file
     status=nf90_put_var(ncid,surfel_varid,wl,start=start_3d)
@@ -271,6 +282,10 @@ ELSE
 
     ! Put EFDC times into file
     status=nf90_put_var(ncid, time_varid, time_efdc, start=start)
+    if(status /= nf90_NoErr) call handle_err(status)
+	
+	! Put wet dry mask into file
+    status=nf90_put_var(ncid,mask_varid,mask,start=start_3d)
     if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put surface elevations into file

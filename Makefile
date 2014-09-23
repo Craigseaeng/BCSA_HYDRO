@@ -6,11 +6,11 @@
 # 6/30/2014 Chris Flanary Added support for NetCDF
 
 # Name of executable file to make
-EXEC=efdc_gfortran_v1.7
+EXEC=/home/cflanary/bcsa_sims/efdc_gfortran_v1.8
 
 # Set compiler flags
 FC= gfortran
-FFLAGS=-O3 -ffree-line-length-none -fbounds-check
+FFLAGS=-O3 -w -ffree-line-length-none -fbounds-check
 NETCDF_INCLDIR=-I/usr/local/netcdf/include
 NETCDF_LIBDIR=-L/usr/local/netcdf/lib -lnetcdff
 
