@@ -128,8 +128,8 @@ IF(.NOT.FIRST_NETCDF)THEN
 
     ! Define deltat
     status=nf90_def_var(ncid,'timestep',nf90_real,ts_varid)
-    status=nf90_put_att(ncid, ts_varid, 'long_name', 'EFDC numerical timestep')
-    status=nf90_put_att(ncid, ts_varid, 'units', 'seconds')
+    status=nf90_put_att(ncid, ts_varid, 'long_name', 'Numerical Timestep')
+    status=nf90_put_att(ncid, ts_varid, 'units', 's')
 
     ! Define dimensions
     status=nf90_def_dim(ncid,'I',IC-2,I_dimid)
@@ -139,71 +139,82 @@ IF(.NOT.FIRST_NETCDF)THEN
 
     ! Define model time
     status=nf90_def_var(ncid,'efdc_time',nf90_real,time_dimid,time_varid)
-    status=nf90_put_att(ncid, time_varid, 'long_name', 'EFDC time since initialization')
-    status=nf90_put_att(ncid, time_varid, 'units', 'seconds since ???')
+    status=nf90_put_att(ncid, time_varid, 'long_name', 'Time')
+    status=nf90_put_att(ncid, time_varid, 'units', 'Days')
+	status=nf90_put_att(ncid, time_varid, 'ref_time', '20090516')
     status=nf90_put_att(ncid, time_varid, 'calendar', 'gregorian')
 
     ! Define coordinates variables
     status=nf90_def_var(ncid,'X',nf90_float,(/J_dimid,I_dimid/),X_varid)
     status=nf90_put_att(ncid, X_varid, 'long_name', 'X coordinate')
-    status=nf90_put_att(ncid, X_varid, 'units', 'meters')
+    status=nf90_put_att(ncid, X_varid, 'units', 'm')
+	status=nf90_put_att(ncid, X_varid, 'coord_sys', 'UTM')
     status=nf90_put_att(ncid, X_varid, 'fill_value', -7999)
 
     status=nf90_def_var(ncid,'Y',nf90_float,(/J_dimid,I_dimid/),Y_varid)
     status=nf90_put_att(ncid, Y_varid, 'long_name', 'Y coordinate')
-    status=nf90_put_att(ncid, Y_varid, 'units', 'meters')
+    status=nf90_put_att(ncid, Y_varid, 'units', 'm')
+	status=nf90_put_att(ncid, Y_varid, 'coord_sys', 'UTM')
     status=nf90_put_att(ncid, Y_varid, 'fill_value', -7999)
 	
 	! Define wet dry mask
     status=nf90_def_var(ncid,'wet_dry_mask',nf90_real,(/J_dimid,I_dimid, time_dimid/),mask_varid)
     status=nf90_put_att(ncid, mask_varid, 'long_name', 'Wet Dry Mask')
+	status=nf90_put_att(ncid, mask_varid, 'caxis_lablel', 'Wet Dry Mask')
     status=nf90_put_att(ncid, mask_varid, 'dry_flag', '-99')
 	status=nf90_put_att(ncid, mask_varid, 'wet_flag', '1')
 
     ! Define water surface elevation
     status=nf90_def_var(ncid,'zeta',nf90_real,(/J_dimid,I_dimid, time_dimid/),surfel_varid)
-    status=nf90_put_att(ncid, surfel_varid, 'long_name', 'EFDC surface elevation')
-    status=nf90_put_att(ncid, surfel_varid, 'units', 'meters')
+    status=nf90_put_att(ncid, surfel_varid, 'long_name', 'Surface Elevation')
+	status=nf90_put_att(ncid, surfel_varid, 'caxis_label', 'Surface Elevation (m)')
+    status=nf90_put_att(ncid, surfel_varid, 'units', 'm')
 
     ! Define u component velocity
     status=nf90_def_var(ncid,'u',nf90_float,(/J_dimid,I_dimid, time_dimid/),u_varid)
-    status=nf90_put_att(ncid, u_varid, 'long_name', 'EFDC u component velocity')
-    status=nf90_put_att(ncid, u_varid, 'units', 'meters second-1')
+    status=nf90_put_att(ncid, u_varid, 'long_name', 'U Component Velocity')
+    status=nf90_put_att(ncid, u_varid, 'units', 'm/s')
 
     ! Define v component velocity
     status=nf90_def_var(ncid,'v',nf90_float,(/J_dimid,I_dimid, time_dimid/),v_varid)
-    status=nf90_put_att(ncid, v_varid, 'long_name', 'EFDC v component velocity')
-    status=nf90_put_att(ncid, v_varid, 'units', 'meters second-1')
+    status=nf90_put_att(ncid, v_varid, 'long_name', 'V Component Velocity')
+    status=nf90_put_att(ncid, v_varid, 'units', 'm/s')
 
     ! Define salinity
     status=nf90_def_var(ncid,'salt',nf90_float,(/J_dimid,I_dimid, time_dimid/),sal_varid)
-    status=nf90_put_att(ncid, sal_varid, 'long_name', 'EFDC salinity')
+    status=nf90_put_att(ncid, sal_varid, 'long_name', 'Salinity')
+	status=nf90_put_att(ncid, sal_varid, 'caxis_label', 'Salinity (psu)')
     status=nf90_put_att(ncid, sal_varid, 'units', 'psu')
 
     ! Define dye concentration
     status=nf90_def_var(ncid,'dye',nf90_float,(/J_dimid,I_dimid, time_dimid/),dye_varid)
-    status=nf90_put_att(ncid, dye_varid, 'long_name', 'EFDC dye concentration')
+    status=nf90_put_att(ncid, dye_varid, 'long_name', 'Dye Concentration')
+	status=nf90_put_att(ncid, dye_varid, 'caxis_label', 'Dye Concentration (mg/L)')
     status=nf90_put_att(ncid, dye_varid, 'units', 'mg/L')
 
     ! Define water column TSS
     status=nf90_def_var(ncid,'tss',nf90_float,(/J_dimid,I_dimid,k_dimid,time_dimid/),tss_varid)
-    status=nf90_put_att(ncid, tss_varid, 'long_name', 'Water column TSS')
+    status=nf90_put_att(ncid, tss_varid, 'long_name', 'TSS')
+	status=nf90_put_att(ncid, tss_varid, 'caxis_label', 'TSS (mg/L)')
     status=nf90_put_att(ncid, tss_varid, 'units', 'mg/L')
 
     ! Define bed shear
     status=nf90_def_var(ncid,'tau',nf90_float,(/J_dimid,I_dimid, time_dimid/),tau_varid)
-    status=nf90_put_att(ncid, tau_varid, 'long_name', 'EFDC bed shear')
+    status=nf90_put_att(ncid, tau_varid, 'long_name', 'Shear Stress')
+	status=nf90_put_att(ncid, tau_varid, 'caxis_label', 'Shear Stress (dynes/cm^2)')
     status=nf90_put_att(ncid, tau_varid, 'units', 'dynes/cm^2')
 
     ! Define D50 grain size
     status=nf90_def_var(ncid,'D50',nf90_float,(/J_dimid,I_dimid, time_dimid/),d50_varid)
-    status=nf90_put_att(ncid, d50_varid, 'long_name', 'EFDC D50 grain size')
+    status=nf90_put_att(ncid, d50_varid, 'long_name', 'Median Grain Size')
+	status=nf90_put_att(ncid, d50_varid, 'long_name', 'Median Grain Size (um)')
     status=nf90_put_att(ncid, d50_varid, 'units', 'um')
 
     ! Define sediment thickness
     status=nf90_def_var(ncid,'thickness',nf90_float,(/J_dimid,I_dimid, time_dimid/),thick_varid)
-    status=nf90_put_att(ncid, thick_varid, 'long_name', 'EFDC sediment thickness')
-    status=nf90_put_att(ncid, thick_varid, 'units', 'meters')
+    status=nf90_put_att(ncid, thick_varid, 'long_name', 'Bed Thickness')
+	status=nf90_put_att(ncid, thick_varid, 'caxis_label', 'Bed Thickness (m)')
+    status=nf90_put_att(ncid, thick_varid, 'units', 'm')
 
     ! End define mode
     status=nf90_enddef(ncid)
