@@ -34,9 +34,6 @@ IF(.NOT.FIRSTTIME)THEN
     ! TSS calibration file with TSS concentrations at all MHS stations
     OPEN (UNIT=105, FILE='tss_cal.dat', STATUS='REPLACE')
 
-    ! Boundary calibration file
-    OPEN (UNIT=106, FILE='bry_cal.dat', STATUS='REPLACE')
-
     ! Shear stress calibration file
     OPEN (UNIT=107, FILE='shear_cal.dat', STATUS='REPLACE')
 
@@ -117,19 +114,11 @@ IF(ISTRAN(6).EQ.1) THEN
         SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
     ENDDO
 
-    ! Boundary calibration file with SEDZLJ
-    WRITE(106, '(7F10.3)') time_efdc, zeta(LIJ(136,92)), &
-     SAL(LIJ(136,92),1), SED(LIJ(136,92),1,1)+SED(LIJ(136,92),1,2), zeta(LIJ(77,8)), SAL(LIJ(77,8),1), &
-     SED(LIJ(77,8),1,1)+SED(LIJ(77,8),1,2)
-
 ! If sediment is NOT activated, create files but fill with -7999 value
 ELSE
     ! TSS calibration file
     WRITE(105,299)  time_efdc, 1, -7999.0, -7999.0, -7999.0, -7999.0, -7999.0
 
-    ! Boundary calibration file
-    WRITE(106, '(7F10.3)') time_efdc, zeta(LIJ(136,92)), &
-        SAL(LIJ(136,92),1),-7999.0, zeta(LIJ(77,8)), SAL(LIJ(77,8),1),-7999.0
 ENDIF
 
 DO J=3,JC-2
