@@ -14,20 +14,21 @@ LOGICAL,SAVE::FIRST_NETCDF=.FALSE.
 CHARACTER (len = *), PARAMETER :: FILE_NAME = "efdc_his.nc"
 INTEGER, SAVE :: nc_step, ncid
 INTEGER :: I, J, L, S, status
-INTEGER, SAVE :: I_dimid,J_dimid,k_dimid,time_dimid,mask_varid
-INTEGER, SAVE :: ts_varid,time_varid,X_varid,Y_varid
-INTEGER, SAVE :: surfel_varid,u_varid,v_varid,sal_varid, dye_varid
-INTEGER, SAVE :: tss_varid, tau_varid,d50_varid,thick_varid
+INTEGER, SAVE :: I_dimid,J_dimid,k_dimid,time_dimid
+INTEGER, SAVE :: ts_varid,time_varid,X_varid,Y_varid,depth_varid,mask_varid
+INTEGER, SAVE :: surfel_varid,u_varid,v_varid,sal_varid,dye_varid
+INTEGER, SAVE :: tss_varid,tau_varid,d50_varid,thick_varid
 
 INTEGER :: nstep, start(1), start_3d(3), start_4d(4)
 REAL, DIMENSION(1) :: deltat, time_efdc
 REAL, DIMENSION(LCM) :: zeta,wet_dry_mask
 
 ! Allocate 2D array variables
-REAL, ALLOCATABLE, DIMENSION(:,:) :: lat,lon,mask,wl,u_2d,v_2d,salt,dye_2d
+REAL, ALLOCATABLE, DIMENSION(:,:) :: lat,lon,mask,hz,wl,u_2d,v_2d,salt,dye_2d
 REAL, ALLOCATABLE, DIMENSION(:,:) :: bed_shear,grain_size,sed_thick
 REAL, ALLOCATABLE, DIMENSION(:,:,:) :: tss
 ALLOCATE(mask(JC-2,IC-2))
+ALLOCATE(hz(JC-2,IC-2))
 ALLOCATE(lat(JC-2,IC-2))
 ALLOCATE(lon(JC-2,IC-2))
 ALLOCATE(wl(JC-2,IC-2))
@@ -105,9 +106,11 @@ IF(.NOT.FIRST_NETCDF)THEN
          IF(LIJ(I,J)>0) THEN
             lat(J,I)=DLAT(LIJ(I,J))
             lon(J,I)=DLON(LIJ(I,J))
+			hz(J,I)=BELV(LIJ(I,J))
          ELSE
             lat(J,I)=-7999.
             lon(J,I)=-7999.
+			hz(J,I)=-7999.
          ENDIF
       ENDDO
    ENDDO
@@ -120,7 +123,7 @@ IF(.NOT.FIRST_NETCDF)THEN
     ! Variable definitions
 
     ! Define global attributes
-    status=nf90_put_att(ncid, NF90_GLOBAL, 'title', 'test file')
+    status=nf90_put_att(ncid, NF90_GLOBAL, 'title', 'EFDC Output')
     status=nf90_put_att(ncid, NF90_GLOBAL, 'file', FILE_NAME)
     status=nf90_put_att(ncid, NF90_GLOBAL, 'format', 'netCDF-3 64bit offset file')
     status=nf90_put_att(ncid, NF90_GLOBAL, 'os', 'Linux')
@@ -156,6 +159,12 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_att(ncid, Y_varid, 'units', 'm')
 	status=nf90_put_att(ncid, Y_varid, 'coord_sys', 'UTM')
     status=nf90_put_att(ncid, Y_varid, 'fill_value', -7999)
+	
+	! Define depth
+    status=nf90_def_var(ncid,'depth',nf90_real,(/J_dimid,I_dimid/),depth_varid)
+    status=nf90_put_att(ncid, depth_varid, 'long_name', 'Bottom Elevation')
+	status=nf90_put_att(ncid, depth_varid, 'caxis_lablel', 'Depth (m)')
+    status=nf90_put_att(ncid, depth_varid, 'units', 'm')
 	
 	! Define wet dry mask
     status=nf90_def_var(ncid,'wet_dry_mask',nf90_real,(/J_dimid,I_dimid, time_dimid/),mask_varid)
@@ -234,6 +243,10 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_var(ncid,X_varid,lon)
     if(status /= nf90_NoErr) call handle_err(status)
     status=nf90_put_var(ncid,Y_varid,lat)
+    if(status /= nf90_NoErr) call handle_err(status)
+	
+	! Put depth
+    status=nf90_put_var(ncid,depth_varid,hz)
     if(status /= nf90_NoErr) call handle_err(status)
 	
 	! Put first wet dry mask into file
