@@ -27,12 +27,15 @@ IF(.NOT.FIRSTTIME)THEN
     !OPEN (UNIT=113,FILE='flow_cal.dat', STATUS='REPLACE')
     !WRITE(113,*)'Time,Flow_1,Flow_2,Flow_5,Flow_6a,Flow_6'
 
-    ! Tracer calibration file with salinity and dye conc. at all MHS stations
+    ! Tracer calibration file with salinity and dye
     OPEN (UNIT=115,FILE='tracer_cal.dat', STATUS='REPLACE')
     !WRITE(115,*)'Time,Salt1,Dye1,Salt2,Dye2,Salt5,Dye5,Salt6,Dye6,Salt7,Dye7'
 
-    ! TSS calibration file with TSS concentrations at all MHS stations
+    ! TSS calibration file
     OPEN (UNIT=105, FILE='tss_cal.dat', STATUS='REPLACE')
+	
+	! Bed thickness calibration file
+    OPEN (UNIT=106, FILE='thick_cal.dat', STATUS='REPLACE')
 
     ! Shear stress calibration file
     OPEN (UNIT=107, FILE='shear_cal.dat', STATUS='REPLACE')
@@ -113,6 +116,9 @@ IF(ISTRAN(6).EQ.1) THEN
        WRITE(105,299)  time_efdc, K, SED(LIJ(122,114),1,K), &
         SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
     ENDDO
+	
+	WRITE(106,299)  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
+		THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
 
 ! If sediment is NOT activated, create files but fill with -7999 value
 ELSE
