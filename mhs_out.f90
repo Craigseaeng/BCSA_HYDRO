@@ -117,7 +117,7 @@ IF(ISTRAN(6).EQ.1) THEN
         SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
     ENDDO
 	
-	WRITE(106,299)  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
+	WRITE(106,'(11F7.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
 		THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
 
 ! If sediment is NOT activated, create files but fill with -7999 value

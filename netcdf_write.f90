@@ -94,6 +94,9 @@ DO I=3,IC-2
          bed_shear(J,I)=-7999.
          grain_size(J,I)=-7999.
          sed_thick(J,I)=-7999.
+		 DO S=1,NSCM
+            tss(J,I,S)=-7999.
+         ENDDO
       ENDIF
    ENDDO
 ENDDO
