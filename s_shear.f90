@@ -178,7 +178,7 @@ SUBROUTINE SEDZLJ_SHEAR
           VTMP=100.0*STCUV(L)*(VHE(LNC(L))+VHE(L))/(HV(LNC(L))+HV(L))
           VELMAG=SQRT(UTMP**2+VTMP**2)
           ! Calculate Initial Friction Factors
-          FC(L)=(0.42/LOG(HP(L)/(2.0*ZBTEMP(L))))**2	
+          FC(L)=(0.42/LOG(11*HP(L)/(2.0*ZBTEMP(L))))**2	
           ! Current only Shear Stress
           IF(ISWNWAVE==0.AND.UWVSQ(L)==0.0.OR.ISWAVE==0)THEN
              TAU(L)=FC(L)*VELMAG**2
