@@ -1646,11 +1646,12 @@ C
 C----------------------------------------------------------------------C  
 C  
 CDYN      IF(N.EQ.NCPPH.AND.ISPPH.EQ.1)THEN  
-Cpmc      IF(N.GE.NCPPH.AND.ISPPH.GE.1)THEN  
-      IF(TIMEDAY.GE.SNAPSHOTS(NSNAPSHOTS))THEN  
-        IF(ISPPH.EQ.1) CALL SURFPLT
-      ENDIF  
-C  
+Cpmc      IF(N.GE.NCPPH.AND.ISPPH.GE.1)THEN
+	  IF(ISPPH.EQ.1) THEN
+        IF(TIMEDAY.GE.SNAPSHOTS(NSNAPSHOTS))THEN  
+            CALL SURFPLT
+        ENDIF  
+C     ENDIF
 C  
 C----------------------------------------------------------------------C  
 C  
