@@ -1759,9 +1759,9 @@ C
           CALL EEXPOUT(0)  
         ENDIF  
       ENDIF  
-      IF(TIMEDAY.GE.SNAPSHOTS(NSNAPSHOTS))THEN  
-        NSNAPSHOTS=NSNAPSHOTS+1
-      ENDIF  
+C      IF(TIMEDAY.GE.SNAPSHOTS(NSNAPSHOTS))THEN  
+C        NSNAPSHOTS=NSNAPSHOTS+1
+C      ENDIF  
 C  
 C**********************************************************************C  
 C  
