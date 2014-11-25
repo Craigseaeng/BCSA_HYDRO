@@ -6,7 +6,7 @@
 # 6/30/2014 Chris Flanary Added support for NetCDF
 
 # Name of executable file to make
-EXEC=/home/cflanary/bcsa_sims/efdc_gfortran_v2
+EXEC=/home/cflanary/bcsa_sims/efdc_gfortran_v3
 
 # Set compiler flags
 FC= gfortran

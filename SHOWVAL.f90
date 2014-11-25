@@ -155,7 +155,7 @@ SUBROUTINE SHOWVAL
   !IF(isveg==1.and.outputflag/=0.or.ISTRAN(1).EQ.1.or.ISTRAN(3).EQ.1.or.ISTRAN(6).EQ.1) CALL tecplot
 
   ! Call nc_out.f90
-  IF(isveg==1.and.outputflag/=0.or.ISTRAN(1).EQ.1.or.ISTRAN(3).EQ.1.or.ISTRAN(6).EQ.1) CALL netcdf_write
+  CALL netcdf_write
   INQUIRE(file='ensight.inp',exist=status)
   IF(status) CALL ensight
   JSHPRT=1
