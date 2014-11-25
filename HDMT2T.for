@@ -1668,11 +1668,12 @@ C----------------------------------------------------------------------C
 C  
 CDYN      IF(N.EQ.NCVPH.AND.ISVPH.GE.1)THEN  
 C  
-      IPLTTMP=0  
-      IF(ISVPH.EQ.1.OR.ISVPH.EQ.2)IPLTTMP=1  
-      IF(TIMEDAY.GE.SNAPSHOTS(NSNAPSHOTS).AND.IPLTTMP.EQ.1)THEN  
-        CALL VELPLTH  
-      ENDIF  
+
+      IF(ISVPH.EQ.1.OR.ISVPH.EQ.2)THEN
+		IF(TIMEDAY.GE.SNAPSHOTS(NSNAPSHOTS))THEN  
+		   CALL VELPLTH  
+		ENDIF
+	  ENDIF
 C  
 C----------------------------------------------------------------------C  
 C  
