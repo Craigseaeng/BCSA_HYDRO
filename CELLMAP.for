@@ -36,7 +36,7 @@ C          IF(IJCT(I,J).EQ.9) WRITE(1,1616)I,J
       JL(LC)=0  
 c      WRITE(1,601)LA  
       WRITE(7,601)LA  
-      WRITE(8,601)LA  
+C      WRITE(8,601)LA  
 c      CLOSE(1)  
   601 FORMAT('  LA=',I10,//)  
  1616 FORMAT(2I10)  
@@ -75,7 +75,7 @@ c      CLOSE(1)
         LCLT=L  
       ENDIF  
       WRITE(7,1616)LALT,LCLT  
-      WRITE(8,1616)LALT,LCLT  
+C      WRITE(8,1616)LALT,LCLT  
 C  
 C **  ASSIGN RED AND BLACK CELL SEQUENCES  (PMC - NOT FUNCTIONAL)
 C  
