@@ -45,14 +45,14 @@ ALLOCATE(maxshear(JC-2,IC-2))
 IF(ISTRAN(1).EQ.1) ALLOCATE(salt(JC-2,IC-2))
 IF(ISTRAN(3).EQ.1) ALLOCATE(dye_2d(JC-2,IC-2))
 IF(ISTRAN(6).EQ.1) THEN
-	ALLOCATE(grain_size(JC-2,IC-2))
-	ALLOCATE(sed_thick(JC-2,IC-2))
-	ALLOCATE(tss(JC-2,IC-2,NSCM))
-	ALLOCATE(e_rate(JC-2,IC-2))
-	ALLOCATE(tau_crit(JC-2,IC-2))
-	ALLOCATE(vz_dif(JC-2,IC-2))
-	ALLOCATE(sed_mass(JC-2,IC-2,KB))
-	ALLOCATE(perc_sed(JC-2,IC-2,NSCM,KB))
+    ALLOCATE(grain_size(JC-2,IC-2))
+    ALLOCATE(sed_thick(JC-2,IC-2))
+    ALLOCATE(tss(JC-2,IC-2,NSCM))
+    ALLOCATE(e_rate(JC-2,IC-2))
+    ALLOCATE(tau_crit(JC-2,IC-2))
+    ALLOCATE(vz_dif(JC-2,IC-2))
+    ALLOCATE(sed_mass(JC-2,IC-2,KB))
+    ALLOCATE(perc_sed(JC-2,IC-2,NSCM,KB))
 ENDIF
 
 ! EFDC time parameter
@@ -82,7 +82,7 @@ IF(.NOT.FIRST_NETCDF)THEN
          ELSE
             lat(J,I)=-7999.
             lon(J,I)=-7999.
-			hz(J,I)=-7999.
+            hz(J,I)=-7999.
          ENDIF
       ENDDO
    ENDDO
@@ -104,13 +104,13 @@ IF(.NOT.FIRST_NETCDF)THEN
     ! Define dimensions
     status=nf90_def_dim(ncid,'I',IC-2,I_dimid)
     status=nf90_def_dim(ncid,'J',JC-2,J_dimid)
-	IF (ISTRAN(6).EQ.1) THEN
-		status=nf90_def_dim(ncid,'NSCM',NSCM,k_dimid)
-		status=nf90_def_dim(ncid,'KB',KB,kb_dimid)
-	ENDIF
+    IF (ISTRAN(6).EQ.1) THEN
+        status=nf90_def_dim(ncid,'NSCM',NSCM,k_dimid)
+        status=nf90_def_dim(ncid,'KB',KB,kb_dimid)
+    ENDIF
     status=nf90_def_dim(ncid,'efdc_time',nf90_unlimited,time_dimid)
-	
-	! Define deltat
+    
+    ! Define deltat
     status=nf90_def_var(ncid,'timestep',nf90_real,ts_varid)
     status=nf90_put_att(ncid, ts_varid, 'long_name', 'Numerical Timestep')
     status=nf90_put_att(ncid, ts_varid, 'units', 'seconds')
@@ -134,13 +134,13 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_att(ncid, Y_varid, 'units', 'm')
     status=nf90_put_att(ncid, Y_varid, 'coord_sys', 'UTM')
     status=nf90_put_att(ncid, Y_varid, 'fill_value', -7999)
-	
+    
     ! Define depth
     status=nf90_def_var(ncid,'depth',nf90_real,(/J_dimid,I_dimid/),depth_varid)
     status=nf90_put_att(ncid, depth_varid, 'long_name', 'Bottom Elevation')
     status=nf90_put_att(ncid, depth_varid, 'caxis_label', 'Bottom Elevation (m)')
     status=nf90_put_att(ncid, depth_varid, 'units', 'm')
-	
+    
     ! Define wet dry mask
     status=nf90_def_var(ncid,'wet_dry_mask',nf90_real,(/J_dimid,I_dimid, time_dimid/),mask_varid)
     status=nf90_put_att(ncid, mask_varid, 'long_name', 'Wet Dry Mask')
@@ -163,91 +163,91 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_def_var(ncid,'v',nf90_float,(/J_dimid,I_dimid, time_dimid/),v_varid)
     status=nf90_put_att(ncid, v_varid, 'long_name', 'V Component Velocity')
     status=nf90_put_att(ncid, v_varid, 'units', 'm/s')
-	
-	! Define max. velocity
+    
+    ! Define max. velocity
     status=nf90_def_var(ncid,'vel_max',nf90_float,(/J_dimid,I_dimid/),vmax_varid)
     status=nf90_put_att(ncid, vmax_varid, 'long_name', 'Max. Velocity')
-	status=nf90_put_att(ncid, vmax_varid, 'caxis_label', 'Max. Velocity (m/s)')
+    status=nf90_put_att(ncid, vmax_varid, 'caxis_label', 'Max. Velocity (m/s)')
     status=nf90_put_att(ncid, vmax_varid, 'units', 'm/s')
-	
-	! Define shear stress
+    
+    ! Define shear stress
     status=nf90_def_var(ncid,'tau',nf90_float,(/J_dimid,I_dimid, time_dimid/),tau_varid)
     status=nf90_put_att(ncid, tau_varid, 'long_name', 'Instant Shear Stress')
     status=nf90_put_att(ncid, tau_varid, 'caxis_label', 'Shear Stress (dynes/cm^2)')
     status=nf90_put_att(ncid, tau_varid, 'units', 'dynes/cm^2')
-	
-	! Define maximum shear stress
+    
+    ! Define maximum shear stress
     status=nf90_def_var(ncid,'taumax',nf90_float,(/J_dimid,I_dimid/),taumax_varid)
     status=nf90_put_att(ncid, taumax_varid, 'long_name', 'Maximum Shear Stress')
     status=nf90_put_att(ncid, taumax_varid, 'caxis_label', 'Max. Shear Stress (dynes/cm^2)')
     status=nf90_put_att(ncid, taumax_varid, 'units', 'dynes/cm^2')
 
-	IF (ISTRAN(1).EQ.1) THEN
-		! Define salinity
-		status=nf90_def_var(ncid,'salt',nf90_float,(/J_dimid,I_dimid, time_dimid/),sal_varid)
-		status=nf90_put_att(ncid, sal_varid, 'long_name', 'Salinity')
-		status=nf90_put_att(ncid, sal_varid, 'caxis_label', 'Salinity (psu)')
-		status=nf90_put_att(ncid, sal_varid, 'units', 'psu')
-	ENDIF
-	
-	IF(ISTRAN(3).EQ.1) THEN
-		! Define dye concentration
-		status=nf90_def_var(ncid,'dye',nf90_float,(/J_dimid,I_dimid, time_dimid/),dye_varid)
-		status=nf90_put_att(ncid, dye_varid, 'long_name', 'Dye Concentration')
-		status=nf90_put_att(ncid, dye_varid, 'caxis_label', 'Dye Concentration (mg/L)')
-		status=nf90_put_att(ncid, dye_varid, 'units', 'mg/L')
-	ENDIF
+    IF (ISTRAN(1).EQ.1) THEN
+        ! Define salinity
+        status=nf90_def_var(ncid,'salt',nf90_float,(/J_dimid,I_dimid, time_dimid/),sal_varid)
+        status=nf90_put_att(ncid, sal_varid, 'long_name', 'Salinity')
+        status=nf90_put_att(ncid, sal_varid, 'caxis_label', 'Salinity (psu)')
+        status=nf90_put_att(ncid, sal_varid, 'units', 'psu')
+    ENDIF
+    
+    IF(ISTRAN(3).EQ.1) THEN
+        ! Define dye concentration
+        status=nf90_def_var(ncid,'dye',nf90_float,(/J_dimid,I_dimid, time_dimid/),dye_varid)
+        status=nf90_put_att(ncid, dye_varid, 'long_name', 'Dye Concentration')
+        status=nf90_put_att(ncid, dye_varid, 'caxis_label', 'Dye Concentration (mg/L)')
+        status=nf90_put_att(ncid, dye_varid, 'units', 'mg/L')
+    ENDIF
 
-	IF (ISTRAN(6).EQ.1) THEN
-		! Define water column TSS
-		status=nf90_def_var(ncid,'tss',nf90_float,(/J_dimid,I_dimid,k_dimid,time_dimid/),tss_varid)
-		status=nf90_put_att(ncid, tss_varid, 'long_name', 'Total Suspended Solids')
-		status=nf90_put_att(ncid, tss_varid, 'caxis_label', 'TSS (mg/L)')
-		status=nf90_put_att(ncid, tss_varid, 'units', 'mg/L')
-		
-		
-		! Define D50 grain size
-		status=nf90_def_var(ncid,'D50',nf90_float,(/J_dimid,I_dimid, time_dimid/),d50_varid)
-		status=nf90_put_att(ncid, d50_varid, 'long_name', 'Median Grain Size')
-		status=nf90_put_att(ncid, d50_varid, 'caxis_label', 'Median Grain Size (um)')
-		status=nf90_put_att(ncid, d50_varid, 'units', 'um')
+    IF (ISTRAN(6).EQ.1) THEN
+        ! Define water column TSS
+        status=nf90_def_var(ncid,'tss',nf90_float,(/J_dimid,I_dimid,k_dimid,time_dimid/),tss_varid)
+        status=nf90_put_att(ncid, tss_varid, 'long_name', 'Total Suspended Solids')
+        status=nf90_put_att(ncid, tss_varid, 'caxis_label', 'TSS (mg/L)')
+        status=nf90_put_att(ncid, tss_varid, 'units', 'mg/L')
+        
+        
+        ! Define D50 grain size
+        status=nf90_def_var(ncid,'D50',nf90_float,(/J_dimid,I_dimid, time_dimid/),d50_varid)
+        status=nf90_put_att(ncid, d50_varid, 'long_name', 'Median Grain Size')
+        status=nf90_put_att(ncid, d50_varid, 'caxis_label', 'Median Grain Size (um)')
+        status=nf90_put_att(ncid, d50_varid, 'units', 'um')
 
-		! Define sediment thickness
-		status=nf90_def_var(ncid,'thickness',nf90_float,(/J_dimid,I_dimid, time_dimid/),thick_varid)
-		status=nf90_put_att(ncid, thick_varid, 'long_name', 'Bed Thickness')
-		status=nf90_put_att(ncid, thick_varid, 'caxis_label', 'Bed Thickness (cm)')
-		status=nf90_put_att(ncid, thick_varid, 'units', 'cm')
-		
-		! Define total erosion rate
-		status=nf90_def_var(ncid,'erate',nf90_float,(/J_dimid,I_dimid, time_dimid/),erate_varid)
-		status=nf90_put_att(ncid, erate_varid, 'long_name', 'Total Erosion Rate')
-		status=nf90_put_att(ncid, erate_varid, 'caxis_label', 'Total Erosion Rate (g/cm^2/ts)')
-		status=nf90_put_att(ncid, erate_varid, 'units', 'g/cm^2/ts')
-		
-		! Define bed critical shear stress
-		status=nf90_def_var(ncid,'taucrit',nf90_float,(/J_dimid,I_dimid, time_dimid/),taucrit_varid)
-		status=nf90_put_att(ncid, taucrit_varid, 'long_name', 'Bed Critical Shear Stress')
-		status=nf90_put_att(ncid, taucrit_varid, 'caxis_label', 'Bed Critical Shear Stress (dynes/cm^2)')
-		status=nf90_put_att(ncid, taucrit_varid, 'units', 'dynes/cm^2')
-		
-		! Define water column vertical diffusivity
-		status=nf90_def_var(ncid,'vzdif',nf90_float,(/J_dimid,I_dimid, time_dimid/),vzdif_varid)
-		status=nf90_put_att(ncid, vzdif_varid, 'caxis_label', 'Vertical Diffusivity (m^2/s)')
-		status=nf90_put_att(ncid, vzdif_varid, 'units', 'm^2/s')
-		
-		! Define cell sediment mass
-		status=nf90_def_var(ncid,'tsed',nf90_float,(/J_dimid,I_dimid,kb_dimid,time_dimid/),tsed_varid)
-		status=nf90_put_att(ncid, tsed_varid, 'long_name', 'Sediment Mass per Cell')
-		status=nf90_put_att(ncid, tsed_varid, 'caxis_label', 'Cell Sed. Mass (g/cm^2)')
-		status=nf90_put_att(ncid, tsed_varid, 'units', 'g/cm^2')
-		
-		! Define percent of sediment size class in each layer
-		status=nf90_def_var(ncid,'per',nf90_float,(/J_dimid,I_dimid,k_dimid,kb_dimid,time_dimid/),psed_varid)
-		status=nf90_put_att(ncid, psed_varid, 'long_name', 'Percent of Sediment Size Class per Cell per Layer')
-		status=nf90_put_att(ncid, psed_varid, 'caxis_label', 'Percent of Size Class (%)')
-		status=nf90_put_att(ncid, psed_varid, 'units', '%')
-	ENDIF
-	
+        ! Define sediment thickness
+        status=nf90_def_var(ncid,'thickness',nf90_float,(/J_dimid,I_dimid, time_dimid/),thick_varid)
+        status=nf90_put_att(ncid, thick_varid, 'long_name', 'Bed Thickness')
+        status=nf90_put_att(ncid, thick_varid, 'caxis_label', 'Bed Thickness (cm)')
+        status=nf90_put_att(ncid, thick_varid, 'units', 'cm')
+        
+        ! Define total erosion rate
+        status=nf90_def_var(ncid,'erate',nf90_float,(/J_dimid,I_dimid, time_dimid/),erate_varid)
+        status=nf90_put_att(ncid, erate_varid, 'long_name', 'Total Erosion Rate')
+        status=nf90_put_att(ncid, erate_varid, 'caxis_label', 'Total Erosion Rate (g/cm^2/ts)')
+        status=nf90_put_att(ncid, erate_varid, 'units', 'g/cm^2/ts')
+        
+        ! Define bed critical shear stress
+        status=nf90_def_var(ncid,'taucrit',nf90_float,(/J_dimid,I_dimid, time_dimid/),taucrit_varid)
+        status=nf90_put_att(ncid, taucrit_varid, 'long_name', 'Bed Critical Shear Stress')
+        status=nf90_put_att(ncid, taucrit_varid, 'caxis_label', 'Bed Critical Shear Stress (dynes/cm^2)')
+        status=nf90_put_att(ncid, taucrit_varid, 'units', 'dynes/cm^2')
+        
+        ! Define water column vertical diffusivity
+        status=nf90_def_var(ncid,'vzdif',nf90_float,(/J_dimid,I_dimid, time_dimid/),vzdif_varid)
+        status=nf90_put_att(ncid, vzdif_varid, 'caxis_label', 'Vertical Diffusivity (m^2/s)')
+        status=nf90_put_att(ncid, vzdif_varid, 'units', 'm^2/s')
+        
+        ! Define cell sediment mass
+        status=nf90_def_var(ncid,'tsed',nf90_float,(/J_dimid,I_dimid,kb_dimid,time_dimid/),tsed_varid)
+        status=nf90_put_att(ncid, tsed_varid, 'long_name', 'Sediment Mass per Cell')
+        status=nf90_put_att(ncid, tsed_varid, 'caxis_label', 'Cell Sed. Mass (g/cm^2)')
+        status=nf90_put_att(ncid, tsed_varid, 'units', 'g/cm^2')
+        
+        ! Define percent of sediment size class in each layer
+        status=nf90_def_var(ncid,'per',nf90_float,(/J_dimid,I_dimid,k_dimid,kb_dimid,time_dimid/),psed_varid)
+        status=nf90_put_att(ncid, psed_varid, 'long_name', 'Percent of Sediment Size Class per Cell per Layer')
+        status=nf90_put_att(ncid, psed_varid, 'caxis_label', 'Percent of Size Class (%)')
+        status=nf90_put_att(ncid, psed_varid, 'units', '%')
+    ENDIF
+    
     ! End define mode
     status=nf90_enddef(ncid)
 
@@ -263,17 +263,17 @@ IF(.NOT.FIRST_NETCDF)THEN
     if(status /= nf90_NoErr) call handle_err(status)
     status=nf90_put_var(ncid,Y_varid,lat)
     if(status /= nf90_NoErr) call handle_err(status)
-	
+    
     ! Put depth
     status=nf90_put_var(ncid,depth_varid,hz)
     if(status /= nf90_NoErr) call handle_err(status)
 
     FIRST_NETCDF=.TRUE.
-	
-	! Initialize variables
-	vel_magc=0.0
-	vel_max=0.0
-	TAUMAX=0.0
+    
+    ! Initialize variables
+    vel_magc=0.0
+    vel_max=0.0
+    TAUMAX=0.0
 
 ENDIF
 
@@ -287,97 +287,97 @@ DO L=2,LA
     ELSE
         wet_dry_mask(L)=1.
     ENDIF
-	
-	! Calculate sediment thickness
-	TSET0T(L)=SUM(TSED0(1:KB,L)/BULKDENS(1:KB,L))
-	TSEDT(L)=SUM(TSED(1:KB,L)/BULKDENS(1:KB,L))
-	THCK(L)=TSEDT(L)-TSET0T(L)
+    
+    ! Calculate sediment thickness
+    TSET0T(L)=SUM(TSED0(1:KB,L)/BULKDENS(1:KB,L))
+    TSEDT(L)=SUM(TSED(1:KB,L)/BULKDENS(1:KB,L))
+    THCK(L)=TSEDT(L)-TSET0T(L)
 ENDDO
 
 ! Create 2D arrays for all time variable parameters
 DO J=3,JC-2
    DO I=3,IC-2
       IF(LIJ(I,J)>0) THEN
-		L=LIJ(I,J)
-		
-		! Initialize temp. velocity variables
-		utmpa=0.0
-		vtmpa=0.0
-		
-		IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
-		
-			! Calculate temp. velocities for each water layer
-			DO K=1,KC
-				utmps=U(L,K) ! m/s
-				vtmps=V(L,K) 
-				utmpa=utmps(L)*DZC(K)+utmpa
-				vtmpa=vtmps(L)*DZC(K)+vtmpa
-			ENDDO
-		 
-			! Cell max. velocity
-			vel_magc(L)=SQRT(utmpa**2+vtmpa**2)
-		 
-			IF(vel_magc(L).GT.vel_max(L)) THEN
-				vel_max(L)=vel_magc(L)
-			ENDIF
+        L=LIJ(I,J)
+        
+        ! Initialize temp. velocity variables
+        utmpa=0.0
+        vtmpa=0.0
+        
+        IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
+        
+            ! Calculate temp. velocities for each water layer
+            DO K=1,KC
+                utmps=U(L,K) ! m/s
+                vtmps=V(L,K) 
+                utmpa=utmps(L)*DZC(K)+utmpa
+                vtmpa=vtmps(L)*DZC(K)+vtmpa
+            ENDDO
+         
+            ! Cell max. velocity
+            vel_magc(L)=SQRT(utmpa**2+vtmpa**2)
+         
+            IF(vel_magc(L).GT.vel_max(L)) THEN
+                vel_max(L)=vel_magc(L)
+            ENDIF
 
-			IF(TAU(L).GT.TAUMAX(L)) THEN
-				TAUMAX(L)=TAU(L)
-			ENDIF
-		ENDIF
-		
+            IF(TAU(L).GT.TAUMAX(L)) THEN
+                TAUMAX(L)=TAU(L)
+            ENDIF
+        ENDIF
+        
         mask(J,I)=wet_dry_mask(LIJ(I,J))
         wl(J,I)=zeta(LIJ(I,J))
         u_2d(J,I)=U(LIJ(I,J),1)
         v_2d(J,I)=V(LIJ(I,J),1)
-		mag(J,I)=vel_max(LIJ(I,J))
+        mag(J,I)=vel_max(LIJ(I,J))
         shear(J,I)=TAU(LIJ(I,J))
-		maxshear(J,I)=TAUMAX(LIJ(I,J))
-		IF (ISTRAN(1).EQ.1) salt(J,I)=SAL(LIJ(I,J),1)
+        maxshear(J,I)=TAUMAX(LIJ(I,J))
+        IF (ISTRAN(1).EQ.1) salt(J,I)=SAL(LIJ(I,J),1)
         IF (ISTRAN(3).EQ.1) dye_2d(J,I)=DYE(LIJ(I,J),1)
         IF (ISTRAN(6).EQ.1) THEN
-			grain_size(J,I)=D50AVG(LIJ(I,J))
-			sed_thick(J,I)=THCK(LIJ(I,J))
-			DO S=1,NSCM
-				tss(J,I,S)=SED(LIJ(I,J),1,S)
-				DO T=1,KB
-					perc_sed(J,I,S,T)=PER(S,T,LIJ(I,J))
-				ENDDO
-			ENDDO
-			DO S=1,KB
-				sed_mass(J,I,S)=TSED(S,LIJ(I,J))
-			ENDDO
-			e_rate(J,I)=ETOTO(LIJ(I,J))
-			tau_crit(J,I)=TAUCRIT(LIJ(I,J))
-			vz_dif(J,I)=VZDIF(LIJ(I,J))
-		ENDIF
+            grain_size(J,I)=D50AVG(LIJ(I,J))
+            sed_thick(J,I)=THCK(LIJ(I,J))
+            DO S=1,NSCM
+                tss(J,I,S)=SED(LIJ(I,J),1,S)
+                DO T=1,KB
+                    perc_sed(J,I,S,T)=PER(S,T,LIJ(I,J))
+                ENDDO
+            ENDDO
+            DO S=1,KB
+                sed_mass(J,I,S)=TSED(S,LIJ(I,J))
+            ENDDO
+            e_rate(J,I)=ETOTO(LIJ(I,J))
+            tau_crit(J,I)=TAUCRIT(LIJ(I,J))
+            vz_dif(J,I)=VZDIF(LIJ(I,J))
+        ENDIF
       ELSE
         ! Flag for inactive cells
         mask(J,I)=-7999.
         wl(J,I)=-7999.
         u_2d(J,I)=-7999.
         v_2d(J,I)=-7999.
-		mag(J,I)=-7999.
+        mag(J,I)=-7999.
         shear(J,I)=-7999.
-		maxshear(J,I)=-7999.
-		IF (ISTRAN(1).EQ.1) salt(J,I)=-7999.
+        maxshear(J,I)=-7999.
+        IF (ISTRAN(1).EQ.1) salt(J,I)=-7999.
         IF (ISTRAN(3).EQ.1) dye_2d(J,I)=-7999.
-		IF (ISTRAN(6).EQ.1) THEN
-			grain_size(J,I)=-7999.
-			sed_thick(J,I)=-7999.
-			DO S=1,NSCM
-			   tss(J,I,S)=-7999.
-				DO T=1,KB
-					perc_sed(J,I,S,T)=-7999.
-				ENDDO
-			ENDDO
-			DO S=1,KB
-				sed_mass(J,I,S)=-7999.
-			ENDDO
-			e_rate(J,I)=-7999.
-			tau_crit(J,I)=-7999.
-			vz_dif(J,I)=-7999.
-		ENDIF
+        IF (ISTRAN(6).EQ.1) THEN
+            grain_size(J,I)=-7999.
+            sed_thick(J,I)=-7999.
+            DO S=1,NSCM
+               tss(J,I,S)=-7999.
+                DO T=1,KB
+                    perc_sed(J,I,S,T)=-7999.
+                ENDDO
+            ENDDO
+            DO S=1,KB
+                sed_mass(J,I,S)=-7999.
+            ENDDO
+            e_rate(J,I)=-7999.
+            tau_crit(J,I)=-7999.
+            vz_dif(J,I)=-7999.
+        ENDIF
       ENDIF
    ENDDO
 ENDDO
@@ -422,49 +422,49 @@ status=nf90_put_var(ncid,taumax_varid,maxshear,start=(/1,1,1/))
 if(status /= nf90_NoErr) call handle_err(status)
 
 IF (ISTRAN(1).EQ.1) THEN
-	! Put salinity into file
-	status=nf90_put_var(ncid,sal_varid,salt,start=start_3d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put salinity into file
+    status=nf90_put_var(ncid,sal_varid,salt,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 ENDIF
 
 IF (ISTRAN(3).EQ.1) THEN
-	! Put dye into file
-	status=nf90_put_var(ncid,dye_varid,dye_2d,start=start_3d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put dye into file
+    status=nf90_put_var(ncid,dye_varid,dye_2d,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 ENDIF
 
 IF (ISTRAN(6).EQ.1) THEN
-	! Put TSS into file
-	status=nf90_put_var(ncid,tss_varid,tss,start=start_4d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put TSS into file
+    status=nf90_put_var(ncid,tss_varid,tss,start=start_4d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-	! Put D50 into file
-	status=nf90_put_var(ncid,d50_varid,grain_size,start=start_3d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put D50 into file
+    status=nf90_put_var(ncid,d50_varid,grain_size,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-	! Put sediment thickness into file
-	status=nf90_put_var(ncid,thick_varid,sed_thick,start=start_3d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put sediment thickness into file
+    status=nf90_put_var(ncid,thick_varid,sed_thick,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-	! Put total erosion rate into file
-	status=nf90_put_var(ncid,erate_varid,e_rate,start=start_3d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put total erosion rate into file
+    status=nf90_put_var(ncid,erate_varid,e_rate,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-	! Put bed critical shear stress into file
-	status=nf90_put_var(ncid,taucrit_varid,tau_crit,start=start_3d)
-	if(status /= nf90_NoErr) call handle_err(status)
-	
-	! Put vertical diffusivity
-	status=nf90_put_var(ncid,vzdif_varid,vz_dif,start=start_3d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put bed critical shear stress into file
+    status=nf90_put_var(ncid,taucrit_varid,tau_crit,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
+    
+    ! Put vertical diffusivity
+    status=nf90_put_var(ncid,vzdif_varid,vz_dif,start=start_3d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-	! Put cell sediment mass into file
-	status=nf90_put_var(ncid,tsed_varid,sed_mass,start=start_4d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put cell sediment mass into file
+    status=nf90_put_var(ncid,tsed_varid,sed_mass,start=start_4d)
+    if(status /= nf90_NoErr) call handle_err(status)
 
-	! Put percent of sediment size class into file
-	status=nf90_put_var(ncid,psed_varid,perc_sed,start=start_5d)
-	if(status /= nf90_NoErr) call handle_err(status)
+    ! Put percent of sediment size class into file
+    status=nf90_put_var(ncid,psed_varid,perc_sed,start=start_5d)
+    if(status /= nf90_NoErr) call handle_err(status)
 ENDIF
 
 ! Close NetCDF file each time

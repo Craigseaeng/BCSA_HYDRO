@@ -7,9 +7,10 @@ SUBROUTINE MHS_OUT
 USE GLOBAL
 IMPLICIT NONE
 
-INTEGER::I,J,L,K
+INTEGER::I,J,L,K,LOC
+INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2
 REAL,DIMENSION(LCM)::zeta,vel_maxc,vel_max,tau_max
-REAL::time_efdc
+REAL::time_efdc, tss_flux_u, tss_flux_v, tss_flux_u_tmp, tss_flux_v_tmp
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
 
 ! Create files if first call
@@ -23,13 +24,16 @@ IF(.NOT.FIRSTTIME)THEN
     OPEN (UNIT=115,FILE='tracer_cal.dat', STATUS='REPLACE')
     !WRITE(115,*)'Time,Salt1,Dye1,Salt2,Dye2,Salt5,Dye5,Salt6,Dye6,Salt7,Dye7'
 
-	IF (ISTRAN(6).EQ.1) THEN
-		! TSS calibration file
-		OPEN (UNIT=105, FILE='tss_cal.dat', STATUS='REPLACE')
-	
-		! Bed thickness calibration file
-		OPEN (UNIT=106, FILE='thick_cal.dat', STATUS='REPLACE')
-	ENDIF
+    IF (ISTRAN(6).EQ.1) THEN
+        ! TSS calibration file
+        OPEN (UNIT=105, FILE='tss_cal.dat', STATUS='REPLACE')
+    
+        ! Bed thickness calibration file
+        OPEN (UNIT=106, FILE='thick_cal.dat', STATUS='REPLACE')
+    
+        ! TSS flux file
+        OPEN (UNIT=108, FILE='tss_flux.dat', STATUS='REPLACE')
+    ENDIF
 
     ! Shear stress calibration file
     OPEN (UNIT=107, FILE='shear_cal.dat', STATUS='REPLACE')
@@ -39,17 +43,52 @@ IF(.NOT.FIRSTTIME)THEN
     vel_max=0.0
     tau_max=0.0
 
-	FIRSTTIME=.TRUE.
+    FIRSTTIME=.TRUE.
 ENDIF
 
 ! EFDC time parameter
 time_efdc=DT*FLOAT(N)+TCON*TBEGIN 
 time_efdc=time_efdc/86400.
 
+IF (ISTRAN(6).EQ.1) THEN
+! Calculate TSS flux at MHS01, MHS06, and MHS07
+DO LOC=1,4
+    tss_flux_u=0.0
+    tss_flux_v=0.0
+
+    SELECT CASE (LOC)
+    CASE(1)
+    ITEMP1=116;ITEMP2=129;JTEMP1=114;JTEMP2=114
+
+    CASE(2)
+    ITEMP1=35;ITEMP2=41;JTEMP1=203;JTEMP2=203
+
+    CASE(3)
+    ITEMP1=119;ITEMP2=119;JTEMP1=311;JTEMP2=314
+
+    CASE(4)
+    ITEMP1=128;ITEMP2=131;JTEMP1=349;JTEMP2=349
+    END SELECT
+
+    DO I=ITEMP1,ITEMP2
+        DO J=JTEMP1,JTEMP2
+            IF(LMASKDRY(LIJ(I,J))) THEN
+                DO K=1,NSCM
+                    tss_flux_u_tmp=U(LIJ(I,J),1)*HP(LIJ(I,J))*DXU(LIJ(I,J))*SED(LIJ(I,J),1,K)
+                    tss_flux_u(LOC)=tss_flux_u(LOC)+tss_flux_u_tmp
+                    tss_flux_v_tmp=V(LIJ(I,J),1)*HP(LIJ(I,J))*DYV(LIJ(I,J))*SED(LIJ(I,J),1,K)
+                    tss_flux_v(LOC)=tss_flux_v(LOC)+tss_flux_v_tmp                    
+                ENDDO
+            ENDIF
+        ENDDO
+    ENDDO
+ENDDO
+ENDIF
+
 DO  L=2,LA
     ! Sediment thickness
     TSET0T(L)=SUM(TSED0(1:KB,L)/BULKDENS(1:KB,L))
-	TSEDT(L)=SUM(TSED(1:KB,L)/BULKDENS(1:KB,L))
+    TSEDT(L)=SUM(TSED(1:KB,L)/BULKDENS(1:KB,L))
     THCK(L)=TSEDT(L)-TSET0T(L)
 
     ! Calculate surface elevations and velocities for all active cells
@@ -71,17 +110,21 @@ WRITE(115,'(11F7.3)') time_efdc,SAL(LIJ(122,114),1), &
 IF(ISTRAN(6).EQ.1) THEN
     ! TSS calibration file with SEDZLJ (hard coded for 1 water layer (KC))
     DO K=1,NSCM
-       WRITE(105,299)  time_efdc, K, SED(LIJ(122,114),1,K), &
+        WRITE(105,299)  time_efdc, K, SED(LIJ(122,114),1,K), &
         SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
     ENDDO
-	
-	WRITE(106,'(11F7.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
-		THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
+
+    WRITE(106,'(11F7.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
+    THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
+
+    WRITE(108,'(11F7.3)')  time_efdc, tss_flux_u(1),tss_flux_v(1), tss_flux_u(2),tss_flux_v(2), &
+    tss_flux_u(3),tss_flux_v(3), tss_flux_u(4),tss_flux_v(4)
 ENDIF
 
 DO J=3,JC-2
-	DO I=3,IC-2
-	    IF(LIJ(I,J)>0) THEN
+    DO I=3,IC-2
+        IF(LIJ(I,J)>0) THEN
+            L=LIJ(I,J)
             IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
 
                 IF(vel_maxc(L).GT.vel_max(L)) THEN
@@ -93,7 +136,7 @@ DO J=3,JC-2
                 ENDIF
 
             ENDIF
-	    ENDIF
+        ENDIF
     ENDDO
 ENDDO
 
@@ -109,8 +152,9 @@ FLUSH(112)
 FLUSH(115)
 
 IF (ISTRAN(6).EQ.1) THEN
-	FLUSH(105)
-	FLUSH(106)
+    FLUSH(105)
+    FLUSH(106)
+    FLUSH(108)
 ENDIF
 
 FLUSH(107)
