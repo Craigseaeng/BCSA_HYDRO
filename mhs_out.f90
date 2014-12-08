@@ -10,7 +10,8 @@ IMPLICIT NONE
 INTEGER::I,J,L,K,LOC
 INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2
 REAL,DIMENSION(LCM)::zeta,vel_maxc,vel_max,tau_max
-REAL::time_efdc, tss_flux_u, tss_flux_v, tss_flux_u_tmp, tss_flux_v_tmp
+REAL::time_efdc, tss_flux_u_tmp, tss_flux_v_tmp
+REAL,DIMENSION(8)::tss_flux_u, tss_flux_v
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
 
 ! Create files if first call
