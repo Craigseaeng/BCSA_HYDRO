@@ -19,11 +19,9 @@ IF(.NOT.FIRSTTIME)THEN
 
     ! Velocity calibration file with surface elevation and velocity components at all MHS stations
     OPEN (UNIT=112,FILE='vel_cal.dat', STATUS='REPLACE')
-    !WRITE(112,*)'Time,H1,U1,V1,H2,U2,V2,H5,U5,V5,H6,U6,V6,H7,U7,V7'
 
     ! Tracer calibration file with salinity and dye
-    OPEN (UNIT=115,FILE='tracer_cal.dat', STATUS='REPLACE')
-    !WRITE(115,*)'Time,Salt1,Dye1,Salt2,Dye2,Salt5,Dye5,Salt6,Dye6,Salt7,Dye7'
+    IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) OPEN (UNIT=115,FILE='tracer_cal.dat', STATUS='REPLACE')
 
     IF (ISTRAN(6).EQ.1) THEN
         ! TSS calibration file
@@ -102,10 +100,12 @@ WRITE(112,'(16F7.3)') time_efdc,zeta(LIJ(122,114)), &
     zeta(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),zeta(LIJ(119,312)),U(LIJ(119,312),1), &
     V(LIJ(119,312),1),zeta(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
 
-! Write tracer calibration data each call
-WRITE(115,'(11F7.3)') time_efdc,SAL(LIJ(122,114),1), &
+IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) THEN
+    ! Write tracer calibration data each call
+    WRITE(115,'(11F7.3)') time_efdc,SAL(LIJ(122,114),1), &
     DYE(LIJ(122,114),1),SAL(LIJ(45,29),1),DYE(LIJ(45,29),1),SAL(LIJ(39,202),1),DYE(LIJ(39,202),1), &
     SAL(LIJ(119,312),1),DYE(LIJ(119,312),1),SAL(LIJ(130,349),1),DYE(LIJ(130,349),1)
+ENDIF
 
 ! If sediment is activated
 IF(ISTRAN(6).EQ.1) THEN
@@ -150,7 +150,7 @@ WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),tau_max(LIJ(122,114)),TAU(LIJ
 299 FORMAT(F7.3,2X,I1,F12.3,F12.3,F12.3,F12.3,F12.3)
 
 FLUSH(112)
-FLUSH(115)
+IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) FLUSH(115)
 
 IF (ISTRAN(6).EQ.1) THEN
     FLUSH(105)
