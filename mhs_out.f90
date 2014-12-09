@@ -115,10 +115,10 @@ IF(ISTRAN(6).EQ.1) THEN
         SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
     ENDDO
 
-    WRITE(106,'(11F7.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
+    WRITE(106,'(6F7.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
     THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
 
-    WRITE(108,'(11F7.3)')  time_efdc, tss_flux_u(1),tss_flux_v(1), tss_flux_u(2),tss_flux_v(2), &
+    WRITE(108,'(9F12.3)')  time_efdc, tss_flux_u(1),tss_flux_v(1), tss_flux_u(2),tss_flux_v(2), &
     tss_flux_u(3),tss_flux_v(3), tss_flux_u(4),tss_flux_v(4)
 ENDIF
 
@@ -147,7 +147,7 @@ WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),tau_max(LIJ(122,114)),TAU(LIJ
     TAU(LIJ(130,349)),tau_max(LIJ(130,349))
 
 ! Format for tss_cal.dat file
-299 FORMAT(F7.3,2X,I1,F10.3,F10.3,F10.3,F10.3,F10.3)
+299 FORMAT(F7.3,2X,I1,F12.3,F12.3,F12.3,F12.3,F12.3)
 
 FLUSH(112)
 FLUSH(115)
