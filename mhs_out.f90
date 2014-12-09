@@ -52,8 +52,8 @@ time_efdc=time_efdc/86400.
 IF (ISTRAN(6).EQ.1) THEN
 ! Calculate TSS flux at MHS01, MHS06, and MHS07
 DO LOC=1,4
-    tss_flux_u=0.0
-    tss_flux_v=0.0
+    tss_flux_u(LOC)=0.0
+    tss_flux_v(LOC)=0.0
 
     SELECT CASE (LOC)
     CASE(1)
