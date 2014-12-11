@@ -105,13 +105,13 @@ DO  L=2,LA
 ENDDO 
 
 ! Write velocity calibration data each call
-WRITE(112,'(16F7.3)') time_efdc,zeta(LIJ(122,114)), &
+WRITE(112,'(16F8.3)') time_efdc,zeta(LIJ(122,114)), &
     U(LIJ(122,114),1),V(LIJ(122,114),1),zeta(LIJ(45,29)),U(LIJ(45,29),1),V(LIJ(45,29),1), &
     zeta(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),zeta(LIJ(119,312)),U(LIJ(119,312),1), &
     V(LIJ(119,312),1),zeta(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
     
     ! Write flow rate file
-    WRITE(109,'(9F7.3)')  time_efdc, flow_u(1),flow_v(1), flow_u(2),flow_v(2), &
+    WRITE(109,'(9F10.3)')  time_efdc, flow_u(1),flow_v(1), flow_u(2),flow_v(2), &
     flow_u(3),flow_v(3), flow_u(4),flow_v(4)
 
 IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) THEN
