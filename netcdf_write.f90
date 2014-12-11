@@ -13,7 +13,7 @@ CHARACTER (len = *), PARAMETER :: FILE_NAME = "efdc_his.nc"
 INTEGER, SAVE :: nc_step, ncid
 INTEGER :: I, J, K, L, S, T, status
 INTEGER, SAVE :: I_dimid,J_dimid,k_dimid,kb_dimid,time_dimid
-INTEGER, SAVE :: ts_varid,time_varid,X_varid,Y_varid,depth_varid,mask_varid
+INTEGER, SAVE :: ts_varid,time_varid,X_varid,Y_varid,belev_varid,mask_varid
 INTEGER, SAVE :: surfel_varid,u_varid,v_varid,sal_varid,dye_varid
 INTEGER, SAVE :: tss_varid,tau_varid,taumax_varid,d50_varid,thick_varid
 INTEGER, SAVE :: vmax_varid, erate_varid, taucrit_varid, tsed_varid, psed_varid, vzdif_varid
@@ -72,7 +72,7 @@ start_5d=(/1,1,1,1,nc_step/)
 ! Create NetCDF file and define attributes
 IF(.NOT.FIRST_NETCDF)THEN
 
-   ! Create 2D lat, lon, and depth array for all cells
+   ! Create 2D lat, lon, and belev array for all cells
    DO I=3,IC-2
       DO J=3,JC-2
          IF(LIJ(I,J)>0) THEN
@@ -135,11 +135,11 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_att(ncid, Y_varid, 'coord_sys', 'UTM')
     status=nf90_put_att(ncid, Y_varid, 'fill_value', -7999)
     
-    ! Define depth
-    status=nf90_def_var(ncid,'depth',nf90_real,(/J_dimid,I_dimid/),depth_varid)
-    status=nf90_put_att(ncid, depth_varid, 'long_name', 'Bottom Elevation')
-    status=nf90_put_att(ncid, depth_varid, 'caxis_label', 'Bottom Elevation (m)')
-    status=nf90_put_att(ncid, depth_varid, 'units', 'm')
+    ! Define bottom elevation
+    status=nf90_def_var(ncid,'belev',nf90_real,(/J_dimid,I_dimid/),belev_varid)
+    status=nf90_put_att(ncid, belev_varid, 'long_name', 'Bottom Elevation')
+    status=nf90_put_att(ncid, belev_varid, 'caxis_label', 'Bottom Elevation (m)')
+    status=nf90_put_att(ncid, belev_varid, 'units', 'm')
     
     ! Define wet dry mask
     status=nf90_def_var(ncid,'wet_dry_mask',nf90_real,(/J_dimid,I_dimid, time_dimid/),mask_varid)
@@ -264,8 +264,8 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_var(ncid,Y_varid,lat)
     if(status /= nf90_NoErr) call handle_err(status)
     
-    ! Put depth
-    status=nf90_put_var(ncid,depth_varid,hz)
+    ! Put bottom elevation
+    status=nf90_put_var(ncid,belev_varid,hz)
     if(status /= nf90_NoErr) call handle_err(status)
 
     FIRST_NETCDF=.TRUE.
