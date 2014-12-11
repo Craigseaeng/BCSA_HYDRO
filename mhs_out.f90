@@ -10,8 +10,8 @@ IMPLICIT NONE
 INTEGER::I,J,L,K,LOC
 INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2
 REAL,DIMENSION(LCM)::zeta,vel_maxc,vel_max,tau_max
-REAL::time_efdc, tss_flux_u_tmp, tss_flux_v_tmp
-REAL,DIMENSION(8)::tss_flux_u, tss_flux_v
+REAL::time_efdc, tss_flux_u_tmp, tss_flux_v_tmp, flow_u_tmp, flow_v_tmp
+REAL,DIMENSION(8)::tss_flux_u, tss_flux_v, flow_u, flow_v
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
 
 ! Create files if first call
@@ -19,6 +19,9 @@ IF(.NOT.FIRSTTIME)THEN
 
     ! Velocity calibration file with surface elevation and velocity components at all MHS stations
     OPEN (UNIT=112,FILE='vel_cal.dat', STATUS='REPLACE')
+	
+	! Flow rate
+	OPEN (UNIT=109, FILE='flow.dat', STATUS='REPLACE')
 
     ! Tracer calibration file with salinity and dye
     IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) OPEN (UNIT=115,FILE='tracer_cal.dat', STATUS='REPLACE')
@@ -52,6 +55,8 @@ time_efdc=time_efdc/86400.
 IF (ISTRAN(6).EQ.1) THEN
 ! Calculate TSS flux at MHS01, MHS06, and MHS07
 DO LOC=1,4
+    flow_u(LOC)=0.0
+    flow_v(LOC)=0.0
     tss_flux_u(LOC)=0.0
     tss_flux_v(LOC)=0.0
 
@@ -72,6 +77,11 @@ DO LOC=1,4
     DO I=ITEMP1,ITEMP2
         DO J=JTEMP1,JTEMP2
             IF(LMASKDRY(LIJ(I,J))) THEN
+            flow_u_tmp=U(LIJ(I,J),1)*HP(LIJ(I,J))*DXU(LIJ(I,J))
+            flow_u(LOC)=flow_u(LOC) + flow_u_tmp
+            flow_v_tmp=V(LIJ(I,J),1)*HP(LIJ(I,J))*DYV(LIJ(I,J))
+            flow_v(LOC)=flow_v(LOC) + flow_v_tmp
+            
                 DO K=1,NSCM
                     tss_flux_u_tmp=U(LIJ(I,J),1)*HP(LIJ(I,J))*DXU(LIJ(I,J))*SED(LIJ(I,J),1,K)
                     tss_flux_u(LOC)=tss_flux_u(LOC)+tss_flux_u_tmp
@@ -99,6 +109,10 @@ WRITE(112,'(16F7.3)') time_efdc,zeta(LIJ(122,114)), &
     U(LIJ(122,114),1),V(LIJ(122,114),1),zeta(LIJ(45,29)),U(LIJ(45,29),1),V(LIJ(45,29),1), &
     zeta(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),zeta(LIJ(119,312)),U(LIJ(119,312),1), &
     V(LIJ(119,312),1),zeta(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
+    
+    ! Write flow rate file
+    WRITE(109,'(9F7.3)')  time_efdc, flow_u(1),flow_v(1), flow_u(2),flow_v(2), &
+    flow_u(3),flow_v(3), flow_u(4),flow_v(4)
 
 IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) THEN
     ! Write tracer calibration data each call
@@ -118,6 +132,7 @@ IF(ISTRAN(6).EQ.1) THEN
     WRITE(106,'(6F7.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
     THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
 
+    ! Write TSS flux file if SED is activated
     WRITE(108,'(9F12.3)')  time_efdc, tss_flux_u(1),tss_flux_v(1), tss_flux_u(2),tss_flux_v(2), &
     tss_flux_u(3),tss_flux_v(3), tss_flux_u(4),tss_flux_v(4)
 ENDIF
@@ -150,6 +165,7 @@ WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),tau_max(LIJ(122,114)),TAU(LIJ
 299 FORMAT(F7.3,2X,I1,F12.3,F12.3,F12.3,F12.3,F12.3)
 
 FLUSH(112)
+FLUSH(109)
 IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) FLUSH(115)
 
 IF (ISTRAN(6).EQ.1) THEN
