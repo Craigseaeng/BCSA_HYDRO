@@ -71,10 +71,11 @@ SUBROUTINE SEDZLJ(L)
         PFY(K)=EXP(-0.25d0*PY(K)*PY(K)) !PFY(K)=0.39894*EXP(-0.5*PY(K)*PY(K)) CAJ's old formula A&S 7.1.25
         PX(K)=1.0/(1.0+0.235235*PY(K)) !PX(K)=1.0/(1.0+0.3327*PY(K)) CAJ's old formulation A&S 7.1.25
         PROB(K)=1.0-PFY(K)*(0.34802*PX(K)-0.09587*PX(K)*PX(K)+0.74785*PX(K)**3) !A&S 7.1.25 a1, a2, a3 used (added "1.0-" 1/9/13)
-!        IF(TAU(L)>TCRSUS(K))PROB(K)=0.0 !Need to incorporate into the if an structure
+!        IF(TAU(L)>TCRSUS(K))PROB(K)=0.0 ! Not sure why this was added
 
      ELSEIF(TAU(L)<=TCRSUS(K))THEN !Fine sediment deposition (Krone)
-        PROB(K)=1.0-TAU(L)/(TCRSUS(K)) !deposition probability is calculated
+!        PROB(K)=1.0-TAU(L)/(TCRSUS(K)) !deposition probability is calculated
+        PROB(K)=1.0 !testing CJF Probability of 1 if lower than TCRSUS
      ELSE
         PROB(K)=0.0
      ENDIF
@@ -194,6 +195,9 @@ SUBROUTINE SEDZLJ(L)
   ! on top.  Also if there is a size class present in the top layer
   ! that will not erode, create an active layer.
   IF(TSED(1,L)>0.0.OR.NACTLAY/=0)THEN !if there is mass in the active layer, we must go through the sorting routine
+
+! Collapse active layer if no shear CJF testing
+!IF(TAU(L)/TAUCRIT(L)>=1.0)THEN
      !no active layer for pure erosion (active layer needed for coarsening and deposition)
      ! Sort layers so that the active layer is always Ta thick.
      ! Recalculate the mass fractions after borrowing from lower layers
@@ -220,12 +224,25 @@ SUBROUTINE SEDZLJ(L)
            IF (SLLN(L)+1>KB) SLLN(L)=KB !do not allow specification of the next lower layer to be below the bottom sediment layer
         ENDIF
      ENDIF
+
+! ELSE
+!      FORALL(K=1:NSCM)PER(K,1,L)=0.0 !zero's out percentages
+!      FORALL(K=1:NSCM)PER(K,2,L)=(PER(K,2,L)*TSED(2,L)+PER(K,1,L)*(TSED(1,L)))/(TSED(2,L)+(TSED(1,L))) !recalculate mass fractions
+!
+!      TSED(2,L)=TSED(2,L)+TSED(1,L)!add active layer thickness 
+!      TSED(1,L)=0.0
+!
+!      LAYER(2,L)=1 !ensure that the second layer logical is turned on
+!      LAYER(1,L)=0
+!
+! ENDIF
+
   ENDIF
   !**************************************************************
   ! Now calculate the Erosion Rates
   ALL_LAYERS:DO LL=1,KB !go through all sediment layers so that they are properly eroded and sorted
      IF(LAYER(LL,L)==0)CYCLE !if the layer is gone don't consider it
-     IF(LAYER(1,L)==1.AND.LL/=1)EXIT !if it is depositional, there is no need to consider erosion
+     IF(LAYER(1,L)==1.AND.LL/=1)EXIT !if we are past the first layer and there is mass in it kick out
      IF(LL/=1)THEN
         IF(LAYER(LL-1,L)==1)EXIT
      ENDIF
