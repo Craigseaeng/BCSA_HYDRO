@@ -16,7 +16,7 @@ INTEGER, SAVE :: I_dimid,J_dimid,k_dimid,kb_dimid,time_dimid
 INTEGER, SAVE :: ts_varid,time_varid,X_varid,Y_varid,belev_varid,mask_varid
 INTEGER, SAVE :: surfel_varid,u_varid,v_varid,sal_varid,dye_varid
 INTEGER, SAVE :: tss_varid,tau_varid,taumax_varid,d50_varid,thick_varid
-INTEGER, SAVE :: vmax_varid, erate_varid, taucrit_varid, tsed_varid, psed_varid, vzdif_varid
+INTEGER, SAVE :: vmax_varid, erate_varid, taucrit_varid, tsed_varid, psed_varid
 
 INTEGER :: start(1), start_3d(3), start_4d(4), start_5d(5)
 REAL, DIMENSION(1) :: deltat, time_efdc
@@ -29,7 +29,7 @@ REAL, DIMENSION(LCM) :: vel_max,vel_magc
 REAL, ALLOCATABLE, DIMENSION(:,:) :: lat,lon,hz
 REAL, ALLOCATABLE, DIMENSION(:,:) :: mask,wl,u_2d,v_2d,salt,dye_2d
 REAL, ALLOCATABLE, DIMENSION(:,:) :: shear,maxshear,grain_size,sed_thick,mag
-REAL, ALLOCATABLE, DIMENSION(:,:) :: e_rate, tau_crit, vz_dif
+REAL, ALLOCATABLE, DIMENSION(:,:) :: e_rate, tau_crit
 REAL, ALLOCATABLE, DIMENSION(:,:,:) :: tss, sed_mass
 REAL, ALLOCATABLE, DIMENSION(:,:,:,:) :: perc_sed
 ALLOCATE(lat(JC-2,IC-2))
@@ -50,7 +50,7 @@ IF(ISTRAN(6).EQ.1) THEN
     ALLOCATE(tss(JC-2,IC-2,NSCM))
     ALLOCATE(e_rate(JC-2,IC-2))
     ALLOCATE(tau_crit(JC-2,IC-2))
-    ALLOCATE(vz_dif(JC-2,IC-2))
+!    ALLOCATE(vz_dif(JC-2,IC-2))
     ALLOCATE(sed_mass(JC-2,IC-2,KB))
     ALLOCATE(perc_sed(JC-2,IC-2,NSCM,KB))
 ENDIF
@@ -231,9 +231,9 @@ IF(.NOT.FIRST_NETCDF)THEN
         status=nf90_put_att(ncid, taucrit_varid, 'units', 'dynes/cm^2')
         
         ! Define water column vertical diffusivity
-        status=nf90_def_var(ncid,'vzdif',nf90_float,(/J_dimid,I_dimid, time_dimid/),vzdif_varid)
-        status=nf90_put_att(ncid, vzdif_varid, 'caxis_label', 'Vertical Diffusivity (m^2/s)')
-        status=nf90_put_att(ncid, vzdif_varid, 'units', 'm^2/s')
+        !status=nf90_def_var(ncid,'vzdif',nf90_float,(/J_dimid,I_dimid, time_dimid/),vzdif_varid)
+        !status=nf90_put_att(ncid, vzdif_varid, 'caxis_label', 'Vertical Diffusivity (m^2/s)')
+        !status=nf90_put_att(ncid, vzdif_varid, 'units', 'm^2/s')
         
         ! Define cell sediment mass
         status=nf90_def_var(ncid,'tsed',nf90_float,(/J_dimid,I_dimid,kb_dimid,time_dimid/),tsed_varid)
@@ -349,7 +349,7 @@ DO J=3,JC-2
             ENDDO
             e_rate(J,I)=ETOTO(LIJ(I,J))
             tau_crit(J,I)=TAUCRIT(LIJ(I,J))
-            vz_dif(J,I)=VZDIF(LIJ(I,J))
+            !vz_dif(J,I)=VZDIF(LIJ(I,J))
         ENDIF
       ELSE
         ! Flag for inactive cells
@@ -376,7 +376,7 @@ DO J=3,JC-2
             ENDDO
             e_rate(J,I)=-7999.
             tau_crit(J,I)=-7999.
-            vz_dif(J,I)=-7999.
+            !vz_dif(J,I)=-7999.
         ENDIF
       ENDIF
    ENDDO
@@ -455,8 +455,8 @@ IF (ISTRAN(6).EQ.1) THEN
     if(status /= nf90_NoErr) call handle_err(status)
     
     ! Put vertical diffusivity
-    status=nf90_put_var(ncid,vzdif_varid,vz_dif,start=start_3d)
-    if(status /= nf90_NoErr) call handle_err(status)
+    !status=nf90_put_var(ncid,vzdif_varid,vz_dif,start=start_3d)
+    !if(status /= nf90_NoErr) call handle_err(status)
 
     ! Put cell sediment mass into file
     status=nf90_put_var(ncid,tsed_varid,sed_mass,start=start_4d)
