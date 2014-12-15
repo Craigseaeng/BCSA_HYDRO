@@ -197,7 +197,7 @@ SUBROUTINE SEDZLJ(L)
   IF(TSED(1,L)>0.0.OR.NACTLAY/=0)THEN !if there is mass in the active layer, we must go through the sorting routine
 
   ! Collapse active layer if no shear CJF testing
-  IF(TAU(L)/TAUCRIT(L)>=1.0)THEN
+!  IF(TAU(L)/TAUCRIT(L)>=1.0)THEN
      !no active layer for pure erosion (active layer needed for coarsening and deposition)
      ! Sort layers so that the active layer is always Ta thick.
      ! Recalculate the mass fractions after borrowing from lower layers
@@ -225,17 +225,17 @@ SUBROUTINE SEDZLJ(L)
         ENDIF
      ENDIF
 
-  ELSE
-      FORALL(K=1:NSCM)PER(K,1,L)=0.0 !zero's out percentages
-      FORALL(K=1:NSCM)PER(K,2,L)=(PER(K,2,L)*TSED(2,L)+PER(K,1,L)*(TSED(1,L)))/(TSED(2,L)+(TSED(1,L))) !recalculate mass fractions
+!  ELSE
+!      FORALL(K=1:NSCM)PER(K,1,L)=0.0 !zero's out percentages
+!      FORALL(K=1:NSCM)PER(K,2,L)=(PER(K,2,L)*TSED(2,L)+PER(K,1,L)*(TSED(1,L)))/(TSED(2,L)+(TSED(1,L))) !recalculate mass fractions
 
-      TSED(2,L)=TSED(2,L)+TSED(1,L)!add active layer thickness 
-      TSED(1,L)=0.0
+!      TSED(2,L)=TSED(2,L)+TSED(1,L)!add active layer thickness 
+!      TSED(1,L)=0.0
 
-      LAYER(2,L)=1 !ensure that the second layer logical is turned on
-      LAYER(1,L)=0
+!      LAYER(2,L)=1 !ensure that the second layer logical is turned on
+!      LAYER(1,L)=0
 
-  ENDIF
+!  ENDIF
 
   ENDIF
   !**************************************************************
