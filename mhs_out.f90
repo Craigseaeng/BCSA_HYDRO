@@ -116,7 +116,7 @@ WRITE(112,'(16F8.3)') time_efdc,zeta(LIJ(122,114)), &
 
 IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) THEN
     ! Write tracer calibration data each call
-    WRITE(115,'(11F7.3)') time_efdc,SAL(LIJ(122,114),1), &
+    WRITE(115,'(11F8.3)') time_efdc,SAL(LIJ(122,114),1), &
     DYE(LIJ(122,114),1),SAL(LIJ(45,29),1),DYE(LIJ(45,29),1),SAL(LIJ(39,202),1),DYE(LIJ(39,202),1), &
     SAL(LIJ(119,312),1),DYE(LIJ(119,312),1),SAL(LIJ(130,349),1),DYE(LIJ(130,349),1)
 ENDIF
@@ -129,7 +129,7 @@ IF(ISTRAN(6).EQ.1) THEN
         SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
     ENDDO
 
-    WRITE(106,'(6F7.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
+    WRITE(106,'(6F8.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
     THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
 
     ! Write TSS flux file if SED is activated
