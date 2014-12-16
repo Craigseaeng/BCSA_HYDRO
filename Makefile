@@ -14,29 +14,29 @@ FFLAGS=-O3 -w -ffree-line-length-none -fbounds-check
 NETCDF_INCLDIR=-I/usr/local/netcdf/include
 NETCDF_LIBDIR=-L/usr/local/netcdf/lib -lnetcdff
 
-# Module files needed for linking
+# Module files needed for linking, compiled first
 MODOBJS := Var_Global_Mod.o DRIFTER-SCJ.o WINDWAVE.o
 
-# Define object file directory
+# Define object file build directory
 OBJSDIR=./Build
 
-# ?
+# Add module files to MODOBJS for build directory 
 MODOBJS := $(addprefix $(OBJSDIR)/,$(MODOBJS))
 
-# ?
+# Make modules simultaneously
 MOD := -J $(OBJSDIR)
 
-# ?
+# Create ALL_SRCS array with all source code from any Fortran format
 ALL_SRCS := $(wildcard *.f)
 ALL_SRCS := $(ALL_SRCS) $(wildcard *.f90)
 ALL_SRCS := $(ALL_SRCS) $(wildcard *.F90)
 ALL_SRCS := $(ALL_SRCS) $(wildcard *.for)
 ALL_SRCS := $(ALL_SRCS) $(wildcard *.FOR)
 
-# ?
+# Set command to run Makefile
 MAKE=make
 
-# ?
+# Convert all Fortran source code into object files
 OBJS := $(ALL_SRCS:%.f=$(OBJSDIR)/%.o)
 OBJS := $(OBJS:%.f90=$(OBJSDIR)/%.o)
 OBJS := $(OBJS:%.F90=$(OBJSDIR)/%.o)
