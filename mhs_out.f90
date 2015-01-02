@@ -105,18 +105,18 @@ DO  L=2,LA
 ENDDO 
 
 ! Write velocity calibration data each call
-WRITE(112,'(16F8.3)') time_efdc,zeta(LIJ(122,114)), &
+WRITE(112,'(16F8.4)') time_efdc,zeta(LIJ(122,114)), &
     U(LIJ(122,114),1),V(LIJ(122,114),1),zeta(LIJ(45,29)),U(LIJ(45,29),1),V(LIJ(45,29),1), &
     zeta(LIJ(39,202)),U(LIJ(39,202),1),V(LIJ(39,202),1),zeta(LIJ(119,312)),U(LIJ(119,312),1), &
     V(LIJ(119,312),1),zeta(LIJ(130,349)),U(LIJ(130,349),1),V(LIJ(130,349),1)
     
     ! Write flow rate file
-    WRITE(109,'(9F10.3)')  time_efdc, flow_u(1),flow_v(1), flow_u(2),flow_v(2), &
+    WRITE(109,'(9F10.4)')  time_efdc, flow_u(1),flow_v(1), flow_u(2),flow_v(2), &
     flow_u(3),flow_v(3), flow_u(4),flow_v(4)
 
 IF (ISTRAN(1).EQ.1.OR.ISTRAN(3).EQ.1) THEN
     ! Write tracer calibration data each call
-    WRITE(115,'(11F8.3)') time_efdc,SAL(LIJ(122,114),1), &
+    WRITE(115,'(11F8.4)') time_efdc,SAL(LIJ(122,114),1), &
     DYE(LIJ(122,114),1),SAL(LIJ(45,29),1),DYE(LIJ(45,29),1),SAL(LIJ(39,202),1),DYE(LIJ(39,202),1), &
     SAL(LIJ(119,312),1),DYE(LIJ(119,312),1),SAL(LIJ(130,349),1),DYE(LIJ(130,349),1)
 ENDIF
@@ -129,11 +129,11 @@ IF(ISTRAN(6).EQ.1) THEN
         SED(LIJ(45,29),1,K), SED(LIJ(39,202),1,K), SED(LIJ(119,312),1,K), SED(LIJ(130,349),1,K)
     ENDDO
 
-    WRITE(106,'(6F8.3)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
+    WRITE(106,'(6F8.4)')  time_efdc, THCK(LIJ(122,114)), THCK(LIJ(45,29)), &
     THCK(LIJ(39,202)), THCK(LIJ(119,312)), THCK(LIJ(130,349))
 
     ! Write TSS flux file if SED is activated
-    WRITE(108,'(9F12.3)')  time_efdc, tss_flux_u(1),tss_flux_v(1), tss_flux_u(2),tss_flux_v(2), &
+    WRITE(108,'(9F12.4)')  time_efdc, tss_flux_u(1),tss_flux_v(1), tss_flux_u(2),tss_flux_v(2), &
     tss_flux_u(3),tss_flux_v(3), tss_flux_u(4),tss_flux_v(4)
 ENDIF
 
@@ -157,12 +157,12 @@ DO J=3,JC-2
 ENDDO
 
 ! Shear stress calibration file
-WRITE(107,'(11F10.3)') time_efdc,TAU(LIJ(122,114)),tau_max(LIJ(122,114)),TAU(LIJ(45,29)),tau_max(LIJ(45,29)), &
+WRITE(107,'(11F10.4)') time_efdc,TAU(LIJ(122,114)),tau_max(LIJ(122,114)),TAU(LIJ(45,29)),tau_max(LIJ(45,29)), &
     TAU(LIJ(39,202)),tau_max(LIJ(39,202)),TAU(LIJ(119,312)),tau_max(LIJ(119,312)), &
     TAU(LIJ(130,349)),tau_max(LIJ(130,349))
 
 ! Format for tss_cal.dat file
-299 FORMAT(F7.3,2X,I1,F12.3,F12.3,F12.3,F12.3,F12.3)
+299 FORMAT(F7.4,2X,I1,F12.3,F12.3,F12.3,F12.3,F12.3)
 
 FLUSH(112)
 FLUSH(109)
