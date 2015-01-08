@@ -19,7 +19,8 @@ INTEGER, SAVE :: tss_varid,tau_varid,taumax_varid,d50_varid,thick_varid
 INTEGER, SAVE :: vmax_varid, erate_varid, taucrit_varid, tsed_varid, psed_varid
 
 INTEGER :: start(1), start_3d(3), start_4d(4), start_5d(5)
-REAL, DIMENSION(1) :: deltat, time_efdc
+REAL, DIMENSION(1) :: deltat
+REAL*8::time_efdc
 REAL, DIMENSION(LCM) :: zeta,wet_dry_mask
 REAL, DIMENSION(LCM) :: utmps,vtmps
 REAL :: utmpa,vtmpa
@@ -321,9 +322,9 @@ DO J=3,JC-2
                 vel_max(L)=vel_magc(L)
             ENDIF
 
-            IF(TAU(L).GT.TAUMAX(L)) THEN
-                TAUMAX(L)=TAU(L)
-            ENDIF
+            !IF(TAU(L).GT.TAUMAX(L)) THEN
+            !    TAUMAX(L)=TAU(L)
+            !ENDIF
         ENDIF
         
         mask(J,I)=wet_dry_mask(LIJ(I,J))
