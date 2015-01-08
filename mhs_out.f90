@@ -10,7 +10,8 @@ IMPLICIT NONE
 INTEGER::I,J,L,K,LOC
 INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2
 REAL,DIMENSION(LCM)::zeta,vel_maxc,vel_max,tau_max
-REAL::time_efdc, tss_flux_u_tmp, tss_flux_v_tmp, flow_u_tmp, flow_v_tmp
+REAL*8::time_efdc
+REAL::tss_flux_u_tmp, tss_flux_v_tmp, flow_u_tmp, flow_v_tmp
 REAL,DIMENSION(8)::tss_flux_u, tss_flux_v, flow_u, flow_v
 LOGICAL,SAVE::FIRSTTIME=.FALSE.	
 
