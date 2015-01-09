@@ -117,7 +117,7 @@ IF(.NOT.FIRST_NETCDF)THEN
     status=nf90_put_att(ncid, ts_varid, 'units', 'seconds')
 
     ! Define model time
-    status=nf90_def_var(ncid,'efdc_time',nf90_real,time_dimid,time_varid)
+    status=nf90_def_var(ncid,'efdc_time',nf90_double,time_dimid,time_varid)
     status=nf90_put_att(ncid, time_varid, 'long_name', 'Time')
     status=nf90_put_att(ncid, time_varid, 'units', 'days')
     status=nf90_put_att(ncid, time_varid, 'ref_time', '20090516')
