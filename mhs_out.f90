@@ -53,8 +53,7 @@ ENDIF
 time_efdc=DT*FLOAT(N)+TCON*TBEGIN 
 time_efdc=time_efdc/86400.
 
-IF (ISTRAN(6).EQ.1) THEN
-! Calculate TSS flux at MHS01, MHS02, MHS05, MHS06, MHS07, and the LBC-BCC connector
+! Calculate flow rate and TSS flux at MHS01, MHS02, MHS05, MHS06, MHS07, and the LBC-BCC connector
 DO LOC=1,6
     ! Initialize temporary variables
     flow_u(LOC)=0.0
@@ -63,7 +62,7 @@ DO LOC=1,6
     tss_flux_v(LOC)=0.0
 
     SELECT CASE (LOC)
-	    CASE(1)
+        CASE(1)
 		    ! MHS01 flux line
             ITEMP1=116;ITEMP2=129;JTEMP1=114;JTEMP2=114
 
@@ -79,11 +78,11 @@ DO LOC=1,6
 		    ! MHS06 flux line
             ITEMP1=119;ITEMP2=119;JTEMP1=311;JTEMP2=314
 			
-		CASE(5)
+        CASE(5)
 		    ! MHS07 flux line
 		    ITEMP1=128;ITEMP2=131;JTEMP1=349;JTEMP2=349
 			
-		CASE(6)
+        CASE(6)
 		    ! LBC-BCC connector flux line
 		    ITEMP1=40;ITEMP2=40;JTEMP1=179;JTEMP2=179
     END SELECT
@@ -91,19 +90,22 @@ DO LOC=1,6
     DO I=ITEMP1,ITEMP2
         DO J=JTEMP1,JTEMP2
             IF(LMASKDRY(LIJ(I,J))) THEN
-			! Compute flow rate
-            flow_u_tmp=U(LIJ(I,J),1)*HP(LIJ(I,J))*DXU(LIJ(I,J))
-            flow_u(LOC)=flow_u(LOC) + flow_u_tmp
-            flow_v_tmp=V(LIJ(I,J),1)*HP(LIJ(I,J))*DYV(LIJ(I,J))
-            flow_v(LOC)=flow_v(LOC) + flow_v_tmp
-            
-                DO K=1,NSCM
-				    ! Compute TSS flux for all size classes
-                    tss_flux_u_tmp=U(LIJ(I,J),1)*HP(LIJ(I,J))*DXU(LIJ(I,J))*SED(LIJ(I,J),1,K)
-                    tss_flux_u(LOC)=tss_flux_u(LOC)+tss_flux_u_tmp
-                    tss_flux_v_tmp=V(LIJ(I,J),1)*HP(LIJ(I,J))*DYV(LIJ(I,J))*SED(LIJ(I,J),1,K)
-                    tss_flux_v(LOC)=tss_flux_v(LOC)+tss_flux_v_tmp                    
-                ENDDO
+                ! Compute flow rate
+                flow_u_tmp=U(LIJ(I,J),1)*HP(LIJ(I,J))*DXU(LIJ(I,J))
+                flow_u(LOC)=flow_u(LOC) + flow_u_tmp
+                flow_v_tmp=V(LIJ(I,J),1)*HP(LIJ(I,J))*DYV(LIJ(I,J))
+                flow_v(LOC)=flow_v(LOC) + flow_v_tmp
+
+                ! Only compute TSS flux if SED ISTRAN flag is activated in efdc.inp
+                IF (ISTRAN(6).EQ.1) THEN
+                    DO K=1,NSCM
+                        ! Compute TSS flux for all size classes
+                        tss_flux_u_tmp=U(LIJ(I,J),1)*HP(LIJ(I,J))*DXU(LIJ(I,J))*SED(LIJ(I,J),1,K)
+                        tss_flux_u(LOC)=tss_flux_u(LOC)+tss_flux_u_tmp
+                        tss_flux_v_tmp=V(LIJ(I,J),1)*HP(LIJ(I,J))*DYV(LIJ(I,J))*SED(LIJ(I,J),1,K)
+                        tss_flux_v(LOC)=tss_flux_v(LOC)+tss_flux_v_tmp                    
+                    ENDDO
+                ENDIF
             ENDIF
         ENDDO
     ENDDO
@@ -187,7 +189,7 @@ WRITE(107,304) time_efdc,TAU(LIJ(122,114)),TAU(LIJ(45,29)), &
 301 FORMAT(F9.5,2X,I1,5F12.3)
 302 FORMAT(F9.5,5F9.3)
 303 FORMAT(F9.5,12F15.3)
-304 FORMAT(F9.5,5F8.3)
+304 FORMAT(F9.5,5F9.3)
 
 FLUSH(112)
 FLUSH(109)
