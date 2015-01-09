@@ -110,7 +110,7 @@ DO LOC=1,6
         ENDDO
     ENDDO
 ENDDO
-ENDIF
+
 
 DO  L=2,LA
     ! Sediment thickness
