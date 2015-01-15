@@ -32,14 +32,14 @@ DO J=3,JC-2
             L=LIJ(I,J)
             IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
 
-                IF(TAU(L).GT.tau_max(L)) THEN
-                    tau_max(L)=TAU(L)
+                IF(TAU(L).GT.TAUMAX(L)) THEN
+                    TAUMAX(L)=TAU(L)
                 ENDIF
 
             ENDIF
         ENDIF
     ENDDO
-ENDDO  
+ENDDO
   
   ! CALCULATE EROSION/DEPOSITION FOR TOP LAYER
   ! FOR ALL GRID POINTS
