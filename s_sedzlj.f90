@@ -1,7 +1,7 @@
 SUBROUTINE SEDZLJ(L)
   USE GLOBAL
   IMPLICIT NONE
-  INTEGER::LL,I,J,K,L,SURFACE
+  INTEGER::LL,K,L,SURFACE
   INTEGER::NSC0,NSC1,NTAU0,NTAU1
   REAL::T1TMP
   DOUBLE PRECISION::WDTDZ
@@ -26,20 +26,10 @@ SUBROUTINE SEDZLJ(L)
   !**********************************************************************
   
 ! Compute max. shear stress over every time step
-DO J=3,JC-2
-    DO I=3,IC-2
-        IF(LIJ(I,J)>0) THEN
-            L=LIJ(I,J)
-            IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
 
-                IF(TAU(L).GT.TAUMAX(L)) THEN
-                    TAUMAX(L)=TAU(L)
-                ENDIF
-
-            ENDIF
-        ENDIF
-    ENDDO
-ENDDO
+IF(TAU(L).GT.TAUMAX(L)) THEN
+    TAUMAX(L)=TAU(L)
+ENDIF       
   
   ! CALCULATE EROSION/DEPOSITION FOR TOP LAYER
   ! FOR ALL GRID POINTS
