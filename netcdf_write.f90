@@ -20,7 +20,7 @@ INTEGER, SAVE :: vmax_varid, erate_varid, taucrit_varid, tsed_varid, psed_varid
 
 INTEGER :: start(1), start_3d(3), start_4d(4), start_5d(5)
 REAL, DIMENSION(1) :: deltat
-REAL*8::time_efdc_nc
+REAL*8 :: time_efdc_nc
 REAL, DIMENSION(LCM) :: zeta,wet_dry_mask
 REAL, DIMENSION(LCM) :: utmps,vtmps
 REAL :: utmpa,vtmpa
