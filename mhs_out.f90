@@ -9,7 +9,7 @@ IMPLICIT NONE
 
 INTEGER::I,J,L,K,LOC
 INTEGER::ITEMP1,ITEMP2,JTEMP1,JTEMP2
-REAL,DIMENSION(LCM)::zeta,vel_maxc,vel_max,tau_max
+REAL,DIMENSION(LCM)::zeta
 REAL*8::time_efdc
 REAL::tss_flux_u_tmp, tss_flux_v_tmp, flow_u_tmp, flow_v_tmp
 REAL,DIMENSION(8)::tss_flux_u, tss_flux_v, flow_u, flow_v
@@ -17,6 +17,9 @@ LOGICAL,SAVE::FIRSTTIME=.FALSE.
 
 ! Create files if first call
 IF(.NOT.FIRSTTIME)THEN
+
+! Initialize max. shear stress value to be computed in s_sedzlj.f90
+TAUMAX = 0.0
 
     ! Velocity calibration file with surface elevation and velocity components at all MHS stations
     OPEN (UNIT=112,FILE='vel_cal.dat', STATUS='REPLACE')
@@ -40,11 +43,6 @@ IF(.NOT.FIRSTTIME)THEN
 
     ! Shear stress calibration file
     OPEN (UNIT=107, FILE='shear_cal.dat', STATUS='REPLACE')
-
-    ! Initialize variable for first time step
-    !vel_maxc=0.0
-    !vel_max=0.0
-    !tau_max=0.0
 
     FIRSTTIME=.TRUE.
 ENDIF
@@ -158,25 +156,6 @@ IF(ISTRAN(6).EQ.1) THEN
 	tss_flux_u(6),tss_flux_v(6)
 	
 ENDIF
-
-!DO J=3,JC-2
-!    DO I=3,IC-2
-!        IF(LIJ(I,J)>0) THEN
-!            L=LIJ(I,J)
-!            IF(LMASKDRY(L).AND.HP(L).GT.0.3) THEN
-!
-!                IF(vel_maxc(L).GT.vel_max(L)) THEN
-!                    vel_max(L)=vel_maxc(L)
-!                ENDIF
-!
-!                IF(TAU(L).GT.tau_max(L)) THEN
-!                    tau_max(L)=TAU(L)
-!                ENDIF
-!
-!            ENDIF
-!        ENDIF
-!    ENDDO
-!ENDDO
 
 ! Shear stress calibration file
 WRITE(107,304) time_efdc,TAU(LIJ(122,114)),TAU(LIJ(45,29)), &

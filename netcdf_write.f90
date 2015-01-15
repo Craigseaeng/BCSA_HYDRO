@@ -274,7 +274,6 @@ IF(.NOT.FIRST_NETCDF)THEN
     ! Initialize variables
     vel_magc=0.0
     vel_max=0.0
-    TAUMAX=0.0
 
 ENDIF
 
@@ -322,9 +321,6 @@ DO J=3,JC-2
                 vel_max(L)=vel_magc(L)
             ENDIF
 
-            !IF(TAU(L).GT.TAUMAX(L)) THEN
-            !    TAUMAX(L)=TAU(L)
-            !ENDIF
         ENDIF
         
         mask(J,I)=wet_dry_mask(LIJ(I,J))

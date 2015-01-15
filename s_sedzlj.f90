@@ -25,6 +25,11 @@ SUBROUTINE SEDZLJ(L)
   ! Updated to fix Active Layer issues
   !**********************************************************************
   
+  ! Compute max. shear stress over every time step
+  IF(TAU(L).GT.TAUMAX(L)) THEN
+    TAUMAX(L)=TAU(L)
+  ENDIF  
+  
   ! CALCULATE EROSION/DEPOSITION FOR TOP LAYER
   ! FOR ALL GRID POINTS
   ETOTO(L)=0.0 !initialize no total erosion for a cell
