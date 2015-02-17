@@ -291,7 +291,7 @@ C
           DELT=DTDYN  
         ENDIF  
         OPEN(10,FILE='EE_VEL.OUT',POSITION='APPEND',STATUS='OLD',  
-     &      FORM='UNFORMATTED')  
+     &      ACCESS='SEQUENTIAL', FORM='UNFORMATTED')  
         WRITE (10)N,TIME,DELT  
 
         ! *** Write the UVW Instantaneous Velocity Field (Unrotated)

@@ -18,10 +18,9 @@ SUBROUTINE SEDZLJ_MAIN
 !  Craig Jones and Scott James
 
 !**********************************************************************!
-!
-  !IF(IS_TIMING)THEN  
-        !T1TMP=SECNDS(0.0)  
-  !ENDIF 
+! 
+  IF(ISTIMING.EQ.1)T1TMP=SECNDS(0.0)  
+
 !Calculates the shear stresses from the velocity output of the hydro ! Temp moved to HDMT2T
 !  CALL SEDZLJ_SHEAR
   

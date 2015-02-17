@@ -45,7 +45,7 @@ C
 !      INTEGER GETCH*1  
 !      END  
 C  
-      !TTMP=SECNDS(0.0)  
+      IF(ISTIMING.EQ.1)TTMP=SECNDS(0.0)  
       FOURDPI=4./PI  
 C  
 C**********************************************************************C  
@@ -314,8 +314,8 @@ C
 C  
 C *** EE BEGIN BLOCK  
 C **  INITIALZE & RECORD TIME  
-!      TIMEDAY=TCON*TBEGIN/86400.  
-!      CALL TIMELOG(0,TIMEDAY)  
+      IF(ISTIMING.EQ.1)TIMEDAY=TCON*TBEGIN/86400.  
+      IF(ISTIMING.EQ.1)CALL TIMELOG(0,TIMEDAY)  
 C *** EE END BLOCK  
 C  
       NTIMER=1  
@@ -328,8 +328,8 @@ C
         TIMEDAY=(DT*FLOAT(N)+TCON*TBEGIN)/86400.  
 C  
         IF(ILOGC.EQ.NTSMMT.AND.DEBUG)THEN  
-C          CLOSE(8,STATUS='DELETE')  
-C          OPEN(8,FILE='EFDCLOG.OUT',STATUS='UNKNOWN')  
+          CLOSE(8,STATUS='DELETE')  
+          OPEN(8,FILE='EFDCLOG.OUT',STATUS='UNKNOWN')  
           IF(ISDRY.GT.0)THEN  
             OPEN(1,FILE='DRYWET.LOG',STATUS='UNKNOWN')  
             CLOSE(1,STATUS='DELETE')  
@@ -414,7 +414,7 @@ C**********************************************************************C
 C  
 C **  CALCULATE VERTICAL VISCOSITY AND DIFFUSIVITY AT TIME LEVEL (N)  
 C  
-        !T1TMP=SECNDS(0.0)  
+        IF(ISTIMING.EQ.1)T1TMP=SECNDS(0.0)  
         IF(KC.GT.1)THEN  
           IF(ISQQ.EQ.1)THEN  
             IF(ISTOPT(0).EQ.0)CALL CALAVBOLD (ISTL)  
@@ -422,7 +422,7 @@ C
           ENDIF  
           IF(ISQQ.EQ.2) CALL CALAVB2 (ISTL)  
         ENDIF  
-        !TAVB=TAVB+SECNDS(T1TMP)  
+        IF(ISTIMING.EQ.1)TAVB=TAVB+SECNDS(T1TMP)  
 C  
 C**********************************************************************C  
 C  
@@ -439,7 +439,7 @@ C**********************************************************************C
 C  
 C **  CALCULATE EXPLICIT MOMENTUM EQUATION TERMS  
 C  
-        !T1TMP=SECNDS(0.0)  
+        IF(ISTIMING.EQ.1)T1TMP=SECNDS(0.0)  
 C  
 C NOTES ON VARIOUS VERSIONS OF CALEXP  
 C  
@@ -485,7 +485,7 @@ C PMC       IF(ISCDMA.EQ.5) CALL CALEXP2 (ISTL)
 C PMC       IF(ISCDMA.EQ.6) CALL CALEXP2 (ISTL)  
 C PMC       IF(ISCDMA.EQ.9) CALL CALEXP9 (ISTL)  
 C  
-        !TCEXP=TCEXP+SECNDS(T1TMP)  
+        IF(ISTIMING.EQ.1)TCEXP=TCEXP+SECNDS(T1TMP)  
 C  
 C**********************************************************************C  
 C  
@@ -502,7 +502,7 @@ C**********************************************************************C
 C  
 C **  SOLVE EXTERNAL MODE EQUATIONS FOR P, UHDYE, AND VHDXE  
 C  
-        !T1TMP=SECNDS(0.0)  
+        IF(ISTIMING.EQ.1)T1TMP=SECNDS(0.0)  
 C  
 C NOTES ON VARIOUS VERSIONS OF CALPUV  
 C  
@@ -578,7 +578,7 @@ CJH      ENDIF
 C  
  5555   CONTINUE  
 C  
-        !TPUV=TPUV+SECNDS(T1TMP)  
+        IF(ISTIMING.EQ.1)TPUV=TPUV+SECNDS(T1TMP)  
 C  
 C**********************************************************************C  
 C  
@@ -663,7 +663,7 @@ C **  SOLVE INTERNAL SHEAR MODE EQUATIONS FOR U, UHDY, V, VHDX, AND W
 C  
 C----------------------------------------------------------------------C  
 C  
-        !T1TMP=SECNDS(0.0)  
+        IF(ISTIMING.EQ.1)T1TMP=SECNDS(0.0)  
         IF(KC.GT.1)THEN  
           CALL CALUVW (ISTL,IS2TL)  
         ELSE  
@@ -680,7 +680,7 @@ C
           ENDDO  
           CALL CALUVW (ISTL,IS2TL)  
         ENDIF  
-        !TUVW=TUVW+SECNDS(T1TMP)  
+        IF(ISTIMING.EQ.1)TUVW=TUVW+SECNDS(T1TMP)  
 C  
 C**********************************************************************C  
 C  
@@ -1188,7 +1188,7 @@ C**********************************************************************C
 C  
 C **  CALCULATE TURBULENT INTENSITY SQUARED  
 C  
-        !T1TMP=SECNDS(0.0)  
+        IF(ISTIMING.EQ.1)T1TMP=SECNDS(0.0)  
         IF(KC.GT.1)THEN  
           IF(ISQQ.EQ.1)THEN  
             IF(ISTOPT(0).EQ.0)CALL CALQQ1OLD (ISTL)  
@@ -1196,7 +1196,7 @@ C
           ENDIF  
           IF(ISQQ.EQ.2) CALL CALQQ2 (ISTL)  
         ENDIF  
-        !TQQQ=TQQQ+SECNDS(T1TMP)  
+        IF(ISTIMING.EQ.1)TQQQ=TQQQ+SECNDS(T1TMP)  
 C  
 C**********************************************************************C  
 C  
@@ -1327,9 +1327,9 @@ C
         !ENDIF  
         IF(ISPD.GE.2)THEN                     !DHC       
           IF (TIMEDAY.GE.LA_BEGTI.AND.TIMEDAY.LE.LA_ENDTI) THEN
-            !T1TMP=SECNDS(0.0)  
+            IF(ISTIMING.EQ.1)T1TMP=SECNDS(0.0)  
             CALL DRIFTERC
-            !TLRPD=TLRPD+SECNDS(T1TMP)  
+            IF(ISTIMING.EQ.1)TLRPD=TLRPD+SECNDS(T1TMP)  
           ENDIF
         ENDIF  
         
@@ -1546,7 +1546,7 @@ C **  SUPPORTED ON OTHER SYSTEMS.
 C  
         IF(NTIMER.EQ.NTSPTC)THEN  
 C *** EE BEGIN BLOCK  
-!          CALL TIMELOG(N,TIMEDAY)  
+        IF(ISTIMING.EQ.1)CALL TIMELOG(N,TIMEDAY)  
 C *** EE END BLOCK  
           NTIMER=1  
         ELSE  
@@ -1574,7 +1574,8 @@ C**********************************************************************C
 C  
 C **  TIME LOOP COMPLETED  
 C  
- 1001 CONTINUE !THDMT=THDMT+SECNDS(TTMP)  
+ 1001 CONTINUE
+      IF(ISTIMING.EQ.1)THDMT=THDMT+SECNDS(TTMP)  
 C  
 C**********************************************************************C  
 C  

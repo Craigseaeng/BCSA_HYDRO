@@ -22,7 +22,7 @@ C
 	ENDIF
       ! *** DSLLC
 C  
-      !TTMP=SECNDS(0.0)  
+      IF(ISTIMING.EQ.1)TTMP=SECNDS(0.0)  
       DO L=2,LA  
         PNORTH(L)=P(LNC(L))  
         PSOUTH(L)=P(LSC(L))  
@@ -124,7 +124,7 @@ C
         ENDDO  
       ENDIF
       ! *** DSLLC END BLOCK
-      !TCONG=TCONG+SECNDS(TTMP)  
+      IF(ISTIMING.EQ.1)TCONG=TCONG+SECNDS(TTMP)  
   800 FORMAT(I5,8E13.4)  
   808 FORMAT(2I5,9E13.4)  
       RETURN  

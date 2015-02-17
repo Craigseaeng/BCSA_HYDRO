@@ -77,7 +77,7 @@ C
           CLOSE(10)  
         ENDIF  
         OPEN(10,FILE='EE_WS.OUT',POSITION='APPEND',STATUS='OLD',  
-     &      FORM='UNFORMATTED')  
+     &      ACCESS='SEQUENTIAL',FORM='UNFORMATTED')  
         IF(ISDYNSTP.EQ.0)THEN  
           TIME=DT*FLOAT(N)+TCON*TBEGIN  
         ELSE  

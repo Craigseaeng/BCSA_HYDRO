@@ -885,7 +885,28 @@ C     &             QDWASTE(L),TMPVAL
 	      ENDIF
           ENDDO
 	  END IF
-	END IF	      
+	END IF
+    
+    ! West Riser tide gate variable mask    
+    WL_delt = (P(LIJ(127,388)) - P(LIJ(127,387))) / 9.81        
+      
+    IF(WL_delt > 0.)THEN !Ebb tide (remove mask in channel)...
+        DO L=LIJ(127,388),LIJ(128,388)
+            SVB(L)=1.
+            SVBO(L)=1.
+            SBY(L)=1.
+        ENDDO  
+
+    ELSE !Flood tide (add mask to channel)...
+        DO L=LIJ(127,388),LIJ(128,388)
+            SVB(L)=0.
+            SVBO(L)=0.
+            SBY(L)=0.
+        ENDDO        
+      
+    ENDIF
+
+	
 C
 C 8888 FORMAT(' QDW ',2I6,6E14.6)
 C
