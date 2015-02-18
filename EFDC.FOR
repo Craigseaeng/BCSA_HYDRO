@@ -2104,7 +2104,8 @@ C **  CLOSE OUTPUT  FILES
   
       CLOSE(7)  
       CLOSE(8)  
-      CLOSE(9)  
+      CLOSE(9)
+      FLUSH(6)
 
 C***** Added By Meng Xia, Nov.19,2007
 
