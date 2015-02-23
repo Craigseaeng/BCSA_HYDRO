@@ -220,9 +220,9 @@ SUBROUTINE SEDIC
   ! input diameter using Cheng's model (1998).  Settling speed in cm/s
   DO K=1,NSCM
      IF(BSC>0.0)THEN !if variable density, take it into account
-       DISTAR(K)=D50(K)/10000.0*(((SEDDENS/((B(L,K)+1.0)*1.0000))-1.0)*980.0/0.01**2)**(1.0/3.0) !SCJ changed 1000.0 to 1.0000
+       DISTAR(K)=D50(K)*0.0001*(((SEDDENS/((B(L,K)+1.0)*1.0000))-1.0)*980.0/0.0114**2)**(1.0/3.0) !SCJ changed 1000.0 to 1.0000
      ELSE
-       DISTAR(K)=D50(K)/10000.0*(((SEDDENS/WATERDENS)-1.0)*.9800/0.01**2)**(1.0/3.0) !SCJ changed 980.0 to .9800
+       DISTAR(K)=D50(K)*0.0001*(((SEDDENS/WATERDENS)-1.0)*980./0.0114**2)**(1.0/3.0)
      ENDIF
      DWS(K)=0.01/(D50(K)*0.0001)*(SQRT(25.0+1.2*DISTAR(K)**2)-5.0)**1.5
   ENDDO
