@@ -27,6 +27,7 @@ C
       REAL,SAVE,ALLOCATABLE,DIMENSION(:)::QSUMTMP 
       REAL,SAVE,ALLOCATABLE,DIMENSION(:)::SUB1
       REAL,SAVE,ALLOCATABLE,DIMENSION(:)::SVB1
+      REAL :: WL_delt
       IF(.NOT.ALLOCATED(IACTIVE))THEN
         ALLOCATE(IACTIVE(NCHANM))  
         ALLOCATE(IQDRYDWN(LCM))  
@@ -887,24 +888,24 @@ C     &             QDWASTE(L),TMPVAL
 	  END IF
 	END IF
     
-    ! West Riser tide gate variable mask    
-    WL_delt = (P(LIJ(127,388)) - P(LIJ(127,387))) / 9.81        
+      ! West Riser tide gate variable mask    
+      WL_delt = (P(LIJ(128,388)) - P(LIJ(128,387))) / 9.81        
       
-    IF(WL_delt > 0.)THEN !Ebb tide (remove mask in channel)...
+      IF(WL_delt > 0.)THEN !Ebb tide (remove mask in channel)...
         DO L=LIJ(127,388),LIJ(128,388)
             SVB(L)=1.
             SVBO(L)=1.
             SBY(L)=1.
         ENDDO  
 
-    ELSE !Flood tide (add mask to channel)...
+      ELSE !Flood tide (add mask to channel)...
         DO L=LIJ(127,388),LIJ(128,388)
             SVB(L)=0.
             SVBO(L)=0.
             SBY(L)=0.
         ENDDO        
       
-    ENDIF
+      ENDIF
 
 	
 C
